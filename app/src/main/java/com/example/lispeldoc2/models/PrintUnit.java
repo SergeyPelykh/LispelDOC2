@@ -1,12 +1,17 @@
 package com.example.lispeldoc2.models;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.example.lispeldoc2.interfaces.ListedFields;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
+@Entity(tableName = "printUnit_table")
 public class PrintUnit implements ListedFields {
+    @PrimaryKey(autoGenerate = true)
     private Long id;
     private Date dateOfCreate;
     private String partName;
@@ -31,6 +36,12 @@ public class PrintUnit implements ListedFields {
     public ArrayList<String> getListOfFields() {
         return fields;
     }
+
+    @Override
+    public String getDescription() {
+        return partName + " " + vendor + " " + model;
+    }
+
     private static final ArrayList<String> fields = new ArrayList<>(
             Arrays.asList("number", "partName", "vendor", "model", "originality"));
 }

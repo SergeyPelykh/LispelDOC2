@@ -4,4 +4,5 @@ import java.util.ArrayList;
 
 public interface ListedFields {
     ArrayList<String> getListOfFields();
+    String getDescription();
 }

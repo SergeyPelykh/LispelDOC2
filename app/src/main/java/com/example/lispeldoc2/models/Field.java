@@ -1,7 +1,11 @@
 package com.example.lispeldoc2.models;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "field_table")
 public class Field {
-   // @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)
     private long id;
     private String name;
     private int inputType;

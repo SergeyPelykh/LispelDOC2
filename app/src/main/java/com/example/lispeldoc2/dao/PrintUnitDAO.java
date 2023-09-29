@@ -16,4 +16,7 @@ public interface PrintUnitDAO {
 
     @Query("SELECT * FROM printUnit_table")
     LiveData<List<PrintUnit>> getAllEntities();
+
+    @Query("SELECT * FROM printUnit_table WHERE number = :number")
+    LiveData<PrintUnit> getEntityByNumber(String number);
 }

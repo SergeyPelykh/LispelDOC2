@@ -1,23 +1,19 @@
-package com.example.lispeldoc2;
+package com.example.lispeldoc2.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.example.lispeldoc2.R;
 import com.example.lispeldoc2.models.Field;
 import com.example.lispeldoc2.models.PrintUnit;
 import com.example.lispeldoc2.repository.FieldRepository;
 import com.example.lispeldoc2.repository.PrintUnitRepository;
-
-import org.w3c.dom.Text;
 
 import java.util.Date;
 import java.util.List;
@@ -43,6 +39,12 @@ public class MainActivity extends AppCompatActivity {
                 fieldRepository.insert(field).observe(MainActivity.this, x -> {
                     addNewLineToTextView(mainTextView, "insert in field repository with id = " + x);
                 });
+
+                PrintUnit printUnit = new PrintUnit();
+                printUnit.setModel("HP85a");
+                printUnitRepository.insert(printUnit).observe(MainActivity.this, x -> {
+                    addNewLineToTextView(mainTextView, "insert in printUnit repository with id = " + x);
+                });
             }
         });
 
@@ -52,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
                 LiveData<List<PrintUnit>> liveData = printUnitRepository.getAllEntities();
                 liveData.observe(MainActivity.this, x -> {
                     if (x != null) {
+                        for (PrintUnit s :x) {
+                            addNewLineToTextView(mainTextView, s.getId().toString());
+                        }
                         addNewLineToTextView(mainTextView, x.size() + " entities in base ");
                         liveData.removeObservers(MainActivity.this);
                     }

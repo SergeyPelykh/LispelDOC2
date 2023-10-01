@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import com.example.lispeldoc2.interfaces.SavingObject;
 import com.example.lispeldoc2.models.PrintUnit;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface PrintUnitDAO {
     Long insert(PrintUnit printUnit);
 
     @Query("SELECT * FROM printUnit_table")
-    LiveData<List<PrintUnit>> getAllEntities();
+    LiveData<List<PrintUnit>>getAllEntities();
 
     @Query("SELECT * FROM printUnit_table WHERE number = :number")
     LiveData<PrintUnit> getEntityByNumber(String number);

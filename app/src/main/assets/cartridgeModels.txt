@@ -1,0 +1,33 @@
+Hp 85a
+Hp 83a
+Hp 36a
+Hp 35a
+Hp 44a
+Hp 42a
+Canon 725
+Canon 728
+Canon 703
+Canon 719
+Kyocera TK-1200
+Kyocera TK-1150
+Kyocera TK-1040
+Samsung SCX-4200
+Samsung SCX-4100
+Samsung SCX-4300
+Samsung ML-1210
+Samsung ML-1610
+Samsung ML-1710
+Samsung MLT-D101
+Samsung MLT-D111
+Samsung MLT-D104
+Samsung MLT-D108
+Samsung MLT-D205
+Xerox 3140
+Xerox 3119
+Xerox PE-220
+Xerox 4125
+Brother TN-1075
+Brother TN-2075
+Brother TN-2335
+
+

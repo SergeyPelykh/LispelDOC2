@@ -10,7 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LispelDOC2">
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.InsertEntityInBaseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

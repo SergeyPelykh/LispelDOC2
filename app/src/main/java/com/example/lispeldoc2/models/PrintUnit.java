@@ -2,18 +2,22 @@ package com.example.lispeldoc2.models;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 import com.example.lispeldoc2.interfaces.ListedFields;
+import com.example.lispeldoc2.interfaces.SavingObject;
+import com.example.lispeldoc2.utilities.Convert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
 @Entity(tableName = "printUnit_table")
-public class PrintUnit implements ListedFields {
+public class PrintUnit implements SavingObject {
     @PrimaryKey(autoGenerate = true)
     private Long id;
-    //private Date dateOfCreate;
+    @TypeConverters({Convert.class})
+    private Date dateOfCreate;
     private String partName;
     private String vendor;
     private String model;
@@ -27,23 +31,17 @@ public class PrintUnit implements ListedFields {
     }
 
     public PrintUnit() {
-        //this.dateOfCreate = new Date();
+        this.dateOfCreate = new Date();
         this.number = "LS24";
     }
 
-
-    @Override
-    public ArrayList<String> getListOfFields() {
-        return fields;
+    public Date getDateOfCreate() {
+        return dateOfCreate;
     }
 
-    @Override
-    public String getDescription() {
-        return partName + " " + vendor + " " + model;
+    public void setDateOfCreate(Date dateOfCreate) {
+        this.dateOfCreate = dateOfCreate;
     }
-
-    private static final ArrayList<String> fields = new ArrayList<>(
-            Arrays.asList("number", "partName", "vendor", "model", "originality"));
 
     public Long getId() {
         return id;
@@ -99,9 +97,5 @@ public class PrintUnit implements ListedFields {
 
     public void setOldNumbers(String oldNumbers) {
         this.oldNumbers = oldNumbers;
-    }
-
-    public static ArrayList<String> getFields() {
-        return fields;
     }
 }

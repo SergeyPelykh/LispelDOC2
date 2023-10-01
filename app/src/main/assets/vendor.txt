@@ -1,0 +1,6 @@
+Hp
+Canon
+Kyocera
+Samsung
+Xerox
+Brother

@@ -4,12 +4,10 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.example.lispeldoc2.interfaces.ListedFields;
+import com.example.lispeldoc2.interfaces.AddValueByUser;
 import com.example.lispeldoc2.interfaces.SavingObject;
 import com.example.lispeldoc2.utilities.Convert;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 @Entity(tableName = "printUnit_table")
@@ -18,10 +16,15 @@ public class PrintUnit implements SavingObject {
     private Long id;
     @TypeConverters({Convert.class})
     private Date dateOfCreate;
+    @AddValueByUser
     private String partName;
+    @AddValueByUser
     private String vendor;
+    @AddValueByUser
     private String model;
+    @AddValueByUser
     private String originality;
+    @AddValueByUser
     private String number;
     private String oldNumbers;
 

@@ -28,10 +28,14 @@ public class InsertEntityInBaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_entity_in_base);
+
+        AppCompatButton saveButton = findViewById(R.id.add_entity_in_base_button);
+        AppCompatButton cancelButton = findViewById(R.id.cancel_add_entity_in_base_button);
+        TextView title = findViewById(R.id.addEntityTitleTextView);
+
+        title.setText(getIntent().getStringExtra("titleActivity"));
         ArrayList<String> extra = getIntent().getStringArrayListExtra("listEntityFields");
 
-        TextView title = findViewById(R.id.addEntityTitleTextView);
-        title.setText(getIntent().getStringExtra("titleActivity"));
 
         ArrayList<TextView> visionTextViews = new ArrayList<>();
         visionTextViews.add(findViewById(R.id.add_entity_field_textView));
@@ -53,49 +57,30 @@ public class InsertEntityInBaseActivity extends AppCompatActivity {
         inputEditTexts.add(findViewById(R.id.add_entity_field3_editText));
         inputEditTexts.add(findViewById(R.id.add_entity_field4_editText));
         inputEditTexts.add(findViewById(R.id.add_entity_field5_editText));
-        for (int i = 0; i < extra.size()/2; i++){
-            addInputField(context,
-                    visionTextViews.get(i),
-                    inputEditTexts.get(i),
-                    inscriptionTextViews.get(i),
-                    Integer.parseInt(extra.get(i + i + 1)),
-                    extra.get(i + i));
+
+        if (extra != null) {
+            for (int i = 0; i < extra.size()/2; i++){
+                addInputField(context,
+                        visionTextViews.get(i),
+                        inputEditTexts.get(i),
+                        inscriptionTextViews.get(i),
+                        Integer.parseInt(extra.get(i + i + 1)),
+                        extra.get(i + i));
+            }
+        } else {
+            visionTextViews.get(0).setVisibility(View.VISIBLE);
+            visionTextViews.get(0).setText("отсутствуют данные для отображения");
         }
 
-        AppCompatButton saveButton = findViewById(R.id.add_entity_in_base_button);
+
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (reviseInputField(visionTextViews, inscriptionTextViews, extra.size()/2)) {
-                    ArrayList <String> titleFields = new ArrayList<>();
-                    ArrayList <String> valueFields = new ArrayList<>();
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String temp;
-                    for (int i = 0; i < extra.size()/2; i++) {
-                        temp = inscriptionTextViews.get(i).getText().toString();
-                        titleFields.add(temp);
-                        stringBuilder.append(temp);
-                        temp = visionTextViews.get(i).getText().toString();
-                        valueFields.add(temp);
-                        stringBuilder.append(": " + temp + "\n");
-                    }
-
-                    new AlertDialog.Builder(InsertEntityInBaseActivity.this).setTitle("Добавить Новую запись в базу?")
-                            .setMessage(stringBuilder.toString())
-                            .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                }
-                            })
-                            .setNegativeButton("отмена", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                }
-                            }).show();
-                }
+                onBackPressed();
             }
         });
-        AppCompatButton cancelButton = findViewById(R.id.cancel_add_entity_in_base_button);
+
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

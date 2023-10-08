@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LispelDOC2">
         <activity
-            android:name=".Activities.InsertEntityInBaseActivity"
+            android:name=".Activities.CreateNewEntityDialogActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.MainActivity"

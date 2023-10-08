@@ -7,10 +7,13 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.lispeldoc2.dao.FieldDAO;
 import com.example.lispeldoc2.database.LispelRoomDatabase;
+import com.example.lispeldoc2.interfaces.RepositoryForEntityField;
 import com.example.lispeldoc2.models.Field;
 import com.example.lispeldoc2.models.PrintUnit;
 
 import java.util.Date;
+import java.util.List;
+
 
 public class FieldRepository {
     private FieldDAO fieldDAO;
@@ -30,5 +33,7 @@ public class FieldRepository {
         }).start();
         return mutableLiveData;
     }
-    //public LiveData<Field> getEntity
+    public LiveData<List<Field>> getAllEntities(){
+        return fieldDAO.getAllEntities();
+    }
 }

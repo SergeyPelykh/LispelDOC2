@@ -4,27 +4,49 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.example.lispeldoc2.interfaces.AddValueByUser;
+import com.example.lispeldoc2.interfaces.LispelAddValueByUser;
+import com.example.lispeldoc2.interfaces.LispelCreateFieldObject;
 import com.example.lispeldoc2.interfaces.SavingObject;
+import com.example.lispeldoc2.repository.PrintUnitRepository;
 import com.example.lispeldoc2.utilities.Convert;
 
 import java.util.Date;
-
+@LispelCreateFieldObject(repository_class = PrintUnitRepository.class)
 @Entity(tableName = "printUnit_table")
-public class PrintUnit implements SavingObject {
+public class PrintUnit implements SavingObject{
     @PrimaryKey(autoGenerate = true)
     private Long id;
     @TypeConverters({Convert.class})
     private Date dateOfCreate;
-    @AddValueByUser
+    @LispelAddValueByUser(number = 2,
+            name = "тип",
+            name_hint = "тип",
+            name_title = "тип",
+            input_type = 8192)
     private String partName;
-    @AddValueByUser
+    @LispelAddValueByUser(number = 3,
+            name = "производитель",
+            name_hint = "производитель",
+            name_title = "производитель",
+            input_type = 8192)
     private String vendor;
-    @AddValueByUser
+    @LispelAddValueByUser(number = 4,
+            name = "модель",
+            name_hint = "модель",
+            name_title = "модель",
+            input_type = 8192)
     private String model;
-    @AddValueByUser
+    @LispelAddValueByUser(number = 5,
+            name = "совместимость",
+            name_hint = "совместимость",
+            name_title = "совместимость",
+            input_type = 8192)
     private String originality;
-    @AddValueByUser
+    @LispelAddValueByUser(number = 1,
+            name = "номер стикера",
+            name_hint = "номер стикера",
+            name_title = "номер стикера",
+            input_type = 8192)
     private String number;
     private String oldNumbers;
 

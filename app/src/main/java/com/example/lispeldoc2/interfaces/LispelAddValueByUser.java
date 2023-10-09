@@ -13,4 +13,5 @@ public @interface LispelAddValueByUser {
     String name_hint();
     String name_title();
     int input_type();
+    Class repository();
 }

@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //PrintUnitRepository printUnitRepository = new PrintUnitRepository(getApplication());
-        FieldRepository fieldRepository = new FieldRepository(getApplication());
+        PrintUnitRepository printUnitRepository = new PrintUnitRepository(getApplication());
+        //FieldRepository fieldRepository = new FieldRepository(getApplication());
         AppCompatButton testButton = findViewById(R.id.testButton);
         AppCompatButton testButton2 = findViewById(R.id.testButton2);
         AppCompatButton testButton3 = findViewById(R.id.testButton3);
@@ -58,26 +58,18 @@ public class MainActivity extends AppCompatActivity {
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LiveData<List<Field>> liveData = fieldRepository.getAllEntities();
-                liveData.observe(MainActivity.this, x -> {
-                    if (x != null) {
-                        for (Field f : x) {
-                            addNewLineToTextView(mainTextView, f.getId() + " " + f.getName());
-                        }
-                        liveData.removeObservers(MainActivity.this);
+                PrintUnit printUnit;
+                for (int i = 0; i < 10; i++){
+                    printUnit = new PrintUnit();
+                    printUnit.setModel(i + "a");
+                    printUnit.setVendor("Hp");
+                    printUnitRepository.insert(printUnit);
+                }
+                printUnitRepository.getNameAllEntities(MainActivity.this).observe(MainActivity.this, x -> {
+                    for (String p : x) {
+                        addNewLineToTextView(mainTextView, p);
                     }
                 });
-//                Field field = new Field();
-//                field.setName("some name " + new Date().toString());
-//                fieldRepository.insert(field).observe(MainActivity.this, x -> {
-//                    addNewLineToTextView(mainTextView, "insert in field repository with id = " + x);
-//                });
-//
-//                PrintUnit printUnit = new PrintUnit();
-//                printUnit.setModel("HP85a");
-//                printUnitRepository.insert(printUnit).observe(MainActivity.this, x -> {
-//                    addNewLineToTextView(mainTextView, "insert in printUnit repository with id = " + x);
-//                });
             }
         });
 
@@ -85,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             @SuppressWarnings("unchecked")
             @Override
             public void onClick(View v) {
-                Object object = new Field();
+                Object object = new PrintUnit();
                 if (object.getClass().isAnnotationPresent(LispelCreateFieldObject.class)) {
                     LispelCreateFieldObject annotation = (LispelCreateFieldObject) object
                             .getClass()
@@ -145,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     private void displayField(Object object, TextView textView) {
         java.lang.reflect.Field[] fields = object.getClass().getDeclaredFields();
         addNewLineToTextView(textView, object.getClass().getSimpleName());
-        FieldRepository fieldRepository = new FieldRepository(getApplication());
+        //FieldRepository fieldRepository = new FieldRepository(getApplication());
         for (java.lang.reflect.Field f : fields) {
             if (f.isAnnotationPresent(LispelAddValueByUser.class)) {
                 LispelAddValueByUser annotation = (LispelAddValueByUser) f.getAnnotation(LispelAddValueByUser.class);
@@ -154,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 field.setHint(annotation.name_hint());
                 field.setInscription(annotation.name_title());
                 field.setInputType(annotation.input_type());
-                fieldRepository.insert(field);
+                //fieldRepository.insert(field);
             }
         }
 //        if (object.getClass().isAnnotationPresent(CreateFieldObject.class)){

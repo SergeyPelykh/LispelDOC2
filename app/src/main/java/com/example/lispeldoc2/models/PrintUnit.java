@@ -22,31 +22,36 @@ public class PrintUnit implements SavingObject{
             name = "тип",
             name_hint = "тип",
             name_title = "тип",
-            input_type = 8192)
+            input_type = 8192,
+            repository = com.example.lispeldoc2.repository.PrintUnitRepository.class)
     private String partName;
     @LispelAddValueByUser(number = 3,
             name = "производитель",
             name_hint = "производитель",
             name_title = "производитель",
-            input_type = 8192)
+            input_type = 8192,
+            repository = com.example.lispeldoc2.repository.PrintUnitRepository.class)
     private String vendor;
     @LispelAddValueByUser(number = 4,
             name = "модель",
             name_hint = "модель",
             name_title = "модель",
-            input_type = 8192)
+            input_type = 8192,
+            repository = com.example.lispeldoc2.repository.PrintUnitRepository.class)
     private String model;
     @LispelAddValueByUser(number = 5,
             name = "совместимость",
             name_hint = "совместимость",
             name_title = "совместимость",
-            input_type = 8192)
+            input_type = 8192,
+            repository = com.example.lispeldoc2.repository.PrintUnitRepository.class)
     private String originality;
     @LispelAddValueByUser(number = 1,
             name = "номер стикера",
             name_hint = "номер стикера",
             name_title = "номер стикера",
-            input_type = 8192)
+            input_type = 8192,
+            repository = com.example.lispeldoc2.repository.PrintUnitRepository.class)
     private String number;
     private String oldNumbers;
 

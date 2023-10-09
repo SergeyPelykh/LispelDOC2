@@ -20,13 +20,11 @@ import java.util.concurrent.Executors;
 
 @Database(entities = {
         PrintUnit.class,
-        Field.class,
         StringValue.class},
         version = 1, exportSchema = false)
 @TypeConverters({Convert.class})
 public abstract class LispelRoomDatabase extends RoomDatabase {
     public abstract PrintUnitDAO printUnitDAO();
-    public abstract FieldDAO fieldDAO();
     public abstract StringValueDAO stringValueDAO();
     private static volatile LispelRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;

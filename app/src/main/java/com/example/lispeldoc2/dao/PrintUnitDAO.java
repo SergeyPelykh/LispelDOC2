@@ -20,4 +20,10 @@ public interface PrintUnitDAO {
 
     @Query("SELECT * FROM printUnit_table WHERE number = :number")
     LiveData<PrintUnit> getEntityByNumber(String number);
+
+    @Query("SELECT * FROM printUnit_table WHERE model LIKE :model")
+    LiveData<PrintUnit> getEntityByModel(String model);
+
+    @Query("SELECT * FROM printUnit_table WHERE model LIKE :model")
+    LiveData<List<PrintUnit>> getAllEntitiesByModel(String model);
 }

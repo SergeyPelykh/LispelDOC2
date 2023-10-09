@@ -9,7 +9,7 @@ import com.example.lispeldoc2.models.Field;
 
 import java.util.List;
 
-@Dao
+
 public interface FieldDAO {
     @Insert
     Long insert(Field field);

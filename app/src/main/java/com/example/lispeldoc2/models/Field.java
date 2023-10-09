@@ -3,9 +3,9 @@ package com.example.lispeldoc2.models;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "field_table")
+import com.example.lispeldoc2.interfaces.Repository;
+
 public class Field {
-    @PrimaryKey(autoGenerate = true)
     private long id;
     private String name;
     private int inputType;
@@ -14,7 +14,7 @@ public class Field {
     private int imageButtonVisibility;
     private int inscriptionTextViewVisibility;
     private int listDataVisibility;
-    private String dataSource;
+    private Repository dataSource;
     private String hint;
     private String inscription;
     private String savedValueName;
@@ -124,11 +124,11 @@ public class Field {
         this.listDataVisibility = listDataVisibility;
     }
 
-    public String getDataSource() {
+    public Repository getDataSource() {
         return dataSource;
     }
 
-    public void setDataSource(String dataSource) {
+    public void setDataSource(Repository dataSource) {
         this.dataSource = dataSource;
     }
 }

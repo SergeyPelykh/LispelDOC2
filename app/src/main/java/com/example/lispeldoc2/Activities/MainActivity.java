@@ -58,13 +58,13 @@ public class MainActivity extends AppCompatActivity {
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PrintUnit printUnit;
-                for (int i = 0; i < 10; i++){
-                    printUnit = new PrintUnit();
-                    printUnit.setModel(i + "a");
-                    printUnit.setVendor("Hp");
-                    printUnitRepository.insert(printUnit);
-                }
+//                PrintUnit printUnit;
+//                for (int i = 0; i < 10; i++){
+//                    printUnit = new PrintUnit();
+//                    printUnit.setModel(i + "a");
+//                    printUnit.setVendor("Hp");
+//                    printUnitRepository.insert(printUnit);
+//                }
                 printUnitRepository.getNameAllEntities(MainActivity.this).observe(MainActivity.this, x -> {
                     for (String p : x) {
                         addNewLineToTextView(mainTextView, p);

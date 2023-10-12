@@ -1,9 +1,5 @@
 package com.example.lispeldoc2.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.LiveData;
-
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
@@ -21,20 +17,21 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.example.lispeldoc2.R;
 import com.example.lispeldoc2.interfaces.LispelAddValueByUser;
-import com.example.lispeldoc2.interfaces.LispelCreateFieldObject;
 import com.example.lispeldoc2.interfaces.Repository;
+import com.example.lispeldoc2.interfaces.RepositoryEnum;
 import com.example.lispeldoc2.models.Field;
 import com.example.lispeldoc2.models.Order;
 import com.example.lispeldoc2.models.PrintUnit;
-import com.example.lispeldoc2.repository.PrintUnitRepository;
 import com.example.lispeldoc2.uiServices.FieldSetViews;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CreateNewEntityDialogActivity extends AppCompatActivity {
@@ -119,26 +116,38 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                 field.setInscription(annotation.name_title());
                 field.setInputType(annotation.input_type());
 
-                Repository repository = null;
-                try {
-                    repository = (Repository) annotation.repository()
-                            .getConstructor(Application.class)
-                            .newInstance(getApplication());
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+                if (annotation.base() == RepositoryEnum.SAVE_IN_BASE) {
+                    field.setWriteInBase(true);
                 }
+                if (annotation.base() == RepositoryEnum.READ_FROM_BASE_AND_EDIT){
+                    field.setFromBaseAndEdit(true);
+                }
+
+
+                Repository repository = null;
+
+                Class repositoryClass = annotation.repository();
+                if (!repositoryClass.isInstance(Object.class)) {
+                    try {
+                        repository = (Repository) annotation.repository()
+                                .getConstructor(Application.class)
+                                .newInstance(getApplication());
+                    } catch (IllegalAccessException |
+                            InstantiationException |
+                            InvocationTargetException |
+                            SecurityException |
+                            NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 field.setDataSource(repository);
 
                 mapFields.put(annotation.number(), field);
             }
+
         }
-        for (int key :mapFields.keySet()) {
+        for (int key : mapFields.keySet()) {
             inputFieldService(CreateNewEntityDialogActivity.this,
                     visionTextViews.get(i),
                     inscriptionTextViews.get(i),
@@ -154,7 +163,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
         mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!allFieldsOnLayout.isEmpty()){
+                if (!allFieldsOnLayout.isEmpty()) {
                     for (FieldSetViews f : allFieldsOnLayout) {
                         f.removeFocus(CreateNewEntityDialogActivity.this);
                     }
@@ -162,8 +171,6 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 
     @SuppressLint("WrongConstant")
@@ -195,46 +202,55 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 new ArrayList<>());
 
-
-
         fieldTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 for (FieldSetViews f : allFieldsOnLayout) {
-                    if (f != fieldSetViews){
+                    if (f != fieldSetViews) {
                         f.removeFocus(CreateNewEntityDialogActivity.this);
                     }
                 }
-
+                inputEditText.setText(fieldTextView.getText());
                 fieldTextView.setVisibility(View.INVISIBLE);
                 titleTextView.setVisibility(View.GONE);
                 inputEditText.setVisibility(View.VISIBLE);
+                inputEditText.setSelection(inputEditText.getText().length());
 
 
                 listView.setAdapter(adapter);
-                repository.getNameAllEntities(CreateNewEntityDialogActivity.this).observe(
-                        CreateNewEntityDialogActivity.this, x -> {
-                            adapter.addAll(x);
-
-                            listView.setVisibility(View.VISIBLE);
-
-                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    fieldTextView.setText(x.get(position));
-                                    //inputEditText.setText("");
-                                    hideKeyboard(context, inputEditText);
-                                    listView.setVisibility(View.GONE);
-                                    inputEditText.setVisibility(View.INVISIBLE);
-                                    imageButton.setVisibility(View.INVISIBLE);
-                                    titleTextView.setVisibility(View.VISIBLE);
-                                    fieldTextView.setVisibility(View.VISIBLE);
+                if (repository != null) {
+                    repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this,
+                            fieldTextView.getText().toString()).observe(
+                            CreateNewEntityDialogActivity.this, x -> {
+                                if (x.size() != 0) {
+                                    adapter.clear();
+                                    adapter.addAll(x);
+                                    listView.setVisibility(View.VISIBLE);
+                                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                            if (field.isFromBaseAndEdit()){
+                                                inputEditText.setText(x.get(position));
+                                                inputEditText.setSelection(inputEditText.getText().length());
+                                            }else {
+                                                fieldTextView.setText(x.get(position));
+                                                hideKeyboard(context, inputEditText);
+                                                inputEditText.setVisibility(View.INVISIBLE);
+                                                imageButton.setVisibility(View.INVISIBLE);
+                                                titleTextView.setVisibility(View.VISIBLE);
+                                                fieldTextView.setVisibility(View.VISIBLE);
+                                            }
+                                            listView.setVisibility(View.GONE);
+                                        }
+                                    });
                                 }
-                            });
-                        }
-                );
-
+                            }
+                    );
+                    if (field.isWriteInBase()) {
+                        imageButton.setVisibility(View.VISIBLE);
+                    }
+                }
 
 
                 showKeyboard(context, inputEditText);
@@ -243,10 +259,14 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         if (event.getAction() == KeyEvent.ACTION_DOWN &&
                                 keyCode == KeyEvent.KEYCODE_ENTER) {
-                            fieldTextView.setText(inputEditText.getText());
+                            if (repository == null) {
+                                fieldTextView.setText(inputEditText.getText());
+                            }
+                            if (field.isFromBaseAndEdit()){
+                                fieldTextView.setText(inputEditText.getText());
+                            }
                             imageButton.setVisibility(View.INVISIBLE);
                             inputEditText.setVisibility(View.INVISIBLE);
-                            //inputEditText.setText("");
                             listView.setVisibility(View.GONE);
                             fieldTextView.setVisibility(View.VISIBLE);
                             titleTextView.setVisibility(View.VISIBLE);
@@ -270,7 +290,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                 if (repository != null) {
                     repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this, s.toString())
                             .observe(CreateNewEntityDialogActivity.this, x -> {
-                                if (x.size() != 0){
+                                if (x.size() != 0) {
                                     listView.setVisibility(View.VISIBLE);
                                     adapter.clear();
                                     adapter.addAll(x);
@@ -278,25 +298,26 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                         @Override
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                            fieldTextView.setText(x.get(position));
-                                            //inputEditText.setText("");
-                                            hideKeyboard(context, inputEditText);
+                                            if (field.isFromBaseAndEdit()){
+                                                inputEditText.setText(x.get(position));
+                                                inputEditText.setSelection(inputEditText.getText().length());
+                                            }else {
+                                                fieldTextView.setText(x.get(position));
+                                                hideKeyboard(context, inputEditText);
+                                                inputEditText.setVisibility(View.INVISIBLE);
+                                                imageButton.setVisibility(View.INVISIBLE);
+                                                titleTextView.setVisibility(View.VISIBLE);
+                                                fieldTextView.setVisibility(View.VISIBLE);
+                                            }
                                             listView.setVisibility(View.GONE);
-                                            inputEditText.setVisibility(View.INVISIBLE);
-                                            imageButton.setVisibility(View.INVISIBLE);
-                                            titleTextView.setVisibility(View.VISIBLE);
-                                            fieldTextView.setVisibility(View.VISIBLE);
                                         }
                                     });
-
                                 } else {
                                     adapter.clear();
                                     listView.setVisibility(View.GONE);
                                 }
-
                             });
                 }
-
             }
 
             @Override
@@ -304,7 +325,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
 
             }
         });
-        }
+    }
 
     private void showKeyboard(Context context, EditText input) {
         input.requestFocus();

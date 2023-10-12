@@ -86,15 +86,5 @@ public class PrintUnitRepository implements Repository {
     }
 
 
-//    public LiveData<List<PrintUnit>> getAllEntities(){
-//        return printUnitDAO.getAllEntities();
-//    }
-//
-//
-//    public LiveData<PrintUnit> getEntityByProperty(String property) {
-//        return printUnitDAO.getEntityByNumber(property);
-//    }
-//    public List<String> getListOfFields(){
-//        return Arrays.asList("number", "partName", "vendor", "model", "originality");
-//    }
+
 }

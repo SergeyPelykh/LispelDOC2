@@ -14,6 +14,8 @@ public class Field {
     private int imageButtonVisibility;
     private int inscriptionTextViewVisibility;
     private int listDataVisibility;
+    private boolean writeInBase;
+    private boolean fromBaseAndEdit;
     private Repository dataSource;
     private String hint;
     private String inscription;
@@ -21,6 +23,8 @@ public class Field {
     private String linkedValueName;
 
     public Field() {
+        this.writeInBase = false;
+        this.fromBaseAndEdit = false;
         this.nameTextViewVisibility = 0x00000000;
         this.nameTextEditVisibility = 0x00000004;
         this.imageButtonVisibility = 0x00000004;
@@ -42,6 +46,22 @@ public class Field {
 
     public void setLinkedValueName(String linkedValueName) {
         this.linkedValueName = linkedValueName;
+    }
+
+    public boolean isFromBaseAndEdit() {
+        return fromBaseAndEdit;
+    }
+
+    public void setFromBaseAndEdit(boolean fromBaseAndEdit) {
+        this.fromBaseAndEdit = fromBaseAndEdit;
+    }
+
+    public boolean isWriteInBase() {
+        return writeInBase;
+    }
+
+    public void setWriteInBase(boolean writeInBase) {
+        this.writeInBase = writeInBase;
     }
 
     public int getInputType() {

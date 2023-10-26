@@ -21,9 +21,14 @@ import com.example.lispeldoc2.interfaces.LispelAddValueByUser;
 import com.example.lispeldoc2.interfaces.LispelCreateFieldObject;
 import com.example.lispeldoc2.models.Field;
 import com.example.lispeldoc2.models.PrintUnit;
+import com.example.lispeldoc2.models.StringValue;
 import com.example.lispeldoc2.repository.FieldRepository;
 import com.example.lispeldoc2.repository.PrintUnitRepository;
+import com.example.lispeldoc2.repository.StringValueRepository;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -65,11 +70,32 @@ public class MainActivity extends AppCompatActivity {
 //                    printUnit.setVendor("Hp");
 //                    printUnitRepository.insert(printUnit);
 //                }
-                printUnitRepository.getNameAllEntities(MainActivity.this).observe(MainActivity.this, x -> {
-                    for (String p : x) {
-                        addNewLineToTextView(mainTextView, p);
+//                printUnitRepository.getNameAllEntities(MainActivity.this).observe(MainActivity.this, x -> {
+//                    for (String p : x) {
+//                        addNewLineToTextView(mainTextView, p);
+//                    }
+//                });
+                StringValueRepository stringValueRepository = new StringValueRepository(getApplication(),
+                        "street");
+                stringValueRepository.getAllEntities().observe(MainActivity.this, x -> {
+                    if (x.size() == 0) {
+                        String line = "";
+                        try (
+                                BufferedReader bufferedReader = new BufferedReader(
+                                        new InputStreamReader(getAssets().open("streets.txt")))) {
+                            while ((line = bufferedReader.readLine()) != null) {
+                                stringValueRepository.insert(new StringValue("street", line));
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        addNewLineToTextView(mainTextView, "in stringValueRepository inserted "
+                                + x.size() + " entities");
                     }
                 });
+
+
             }
         });
 
@@ -122,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, CreateNewEntityDialogActivity.class);
+                intent.putExtra("typeOfEntity", "com.example.lispeldoc2.models.Client");
                 startForResult.launch(intent);
             }
         });
@@ -129,8 +156,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addNewLineToTextView(TextView textView, String text) {
-        {
-        }
         textView.setText(textView.getText() + "\n" + text);
     }
 

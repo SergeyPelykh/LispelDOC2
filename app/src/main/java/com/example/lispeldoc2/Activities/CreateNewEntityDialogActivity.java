@@ -1,8 +1,10 @@
 package com.example.lispeldoc2.Activities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,16 +19,23 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.lispeldoc2.R;
 import com.example.lispeldoc2.interfaces.LispelAddValueByUser;
 import com.example.lispeldoc2.interfaces.Repository;
 import com.example.lispeldoc2.interfaces.RepositoryEnum;
+import com.example.lispeldoc2.models.Client;
 import com.example.lispeldoc2.models.Field;
 import com.example.lispeldoc2.models.Order;
 import com.example.lispeldoc2.models.PrintUnit;
+import com.example.lispeldoc2.repository.StringValueRepository;
 import com.example.lispeldoc2.uiServices.FieldSetViews;
 
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +44,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateNewEntityDialogActivity extends AppCompatActivity {
+
+
+    ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent intent = result.getData();
+                    }
+                }
+            }
+    );
+
 
     ArrayList<FieldSetViews> allFieldsOnLayout = new ArrayList<>();
 
@@ -48,6 +71,14 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         );
+
+        AppCompatButton cancelButton = findViewById(R.id.cancel_add_entity_in_base_button);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         ArrayList<ListView> baseOptionListViews = new ArrayList<>();
         baseOptionListViews.add(findViewById(R.id.add_entity_field_ListView));
@@ -103,49 +134,73 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
         }
 
         int i = 0;
-        PrintUnit printUnit = new PrintUnit();
         LispelAddValueByUser annotation;
         Map<Integer, Field> mapFields = new HashMap<>();
-        java.lang.reflect.Field[] fields = Order.class.getDeclaredFields();
-        for (java.lang.reflect.Field f : fields) {
-            if (f.isAnnotationPresent(LispelAddValueByUser.class)) {
-                annotation = (LispelAddValueByUser) f.getAnnotation(LispelAddValueByUser.class);
-                Field field = new Field();
-                field.setName(annotation.name());
-                field.setHint(annotation.name_hint());
-                field.setInscription(annotation.name_title());
-                field.setInputType(annotation.input_type());
 
-                if (annotation.base() == RepositoryEnum.SAVE_IN_BASE) {
-                    field.setWriteInBase(true);
-                }
-                if (annotation.base() == RepositoryEnum.READ_FROM_BASE_AND_EDIT){
-                    field.setFromBaseAndEdit(true);
-                }
+        Object o = null;
+       // "com.example.lispeldoc2.models.Client"
+        try {
+            o = Class.forName(getIntent().getStringExtra("typeOfEntity")).getConstructor().newInstance();
 
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-                Repository repository = null;
+        if (o != null) {
+            java.lang.reflect.Field[] fields = o.getClass().getDeclaredFields();
+            for (java.lang.reflect.Field f : fields) {
+                if (f.isAnnotationPresent(LispelAddValueByUser.class)) {
+                    annotation = (LispelAddValueByUser) f.getAnnotation(LispelAddValueByUser.class);
+                    Field field = new Field();
+                    field.setName(annotation.name());
+                    field.setHint(annotation.name_hint());
+                    field.setInscription(annotation.name_title());
+                    field.setInputType(annotation.input_type());
+                    field.setNameEntityClass(annotation.class_entity());
 
-                Class repositoryClass = annotation.repository();
-                if (!repositoryClass.isInstance(Object.class)) {
-                    try {
-                        repository = (Repository) annotation.repository()
-                                .getConstructor(Application.class)
-                                .newInstance(getApplication());
-                    } catch (IllegalAccessException |
-                            InstantiationException |
-                            InvocationTargetException |
-                            SecurityException |
-                            NoSuchMethodException e) {
-                        e.printStackTrace();
+                    if (annotation.base() == RepositoryEnum.SAVE_IN_BASE) {
+                        field.setWriteInBase(true);
                     }
+                    if (annotation.base() == RepositoryEnum.READ_FROM_BASE_AND_EDIT) {
+                        field.setFromBaseAndEdit(true);
+                    }
+
+
+                    Repository repository = null;
+
+                    Class repositoryClass = annotation.repository();
+                    if (!repositoryClass.isInstance(Object.class)) {
+                        if (repositoryClass.isAssignableFrom(StringValueRepository.class)) {
+                            repository = new StringValueRepository(getApplication(), annotation.repository_title());
+                        } else {
+                            try {
+                                repository = (Repository) annotation.repository()
+                                        .getConstructor(Application.class)
+                                        .newInstance(getApplication());
+                            } catch (IllegalAccessException |
+                                    InstantiationException |
+                                    InvocationTargetException |
+                                    SecurityException |
+                                    NoSuchMethodException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    field.setDataSource(repository);
+
+                    mapFields.put(annotation.number(), field);
                 }
 
-                field.setDataSource(repository);
-
-                mapFields.put(annotation.number(), field);
             }
-
         }
         for (int key : mapFields.keySet()) {
             inputFieldService(CreateNewEntityDialogActivity.this,
@@ -219,6 +274,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
 
 
                 listView.setAdapter(adapter);
+
                 if (repository != null) {
                     repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this,
                             fieldTextView.getText().toString()).observe(
@@ -230,10 +286,10 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                         @Override
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                            if (field.isFromBaseAndEdit()){
-                                                inputEditText.setText(x.get(position));
+                                            if (field.isFromBaseAndEdit()) {
+                                                inputEditText.setText(x.get(position) + " ");
                                                 inputEditText.setSelection(inputEditText.getText().length());
-                                            }else {
+                                            } else {
                                                 fieldTextView.setText(x.get(position));
                                                 hideKeyboard(context, inputEditText);
                                                 inputEditText.setVisibility(View.INVISIBLE);
@@ -262,7 +318,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                             if (repository == null) {
                                 fieldTextView.setText(inputEditText.getText());
                             }
-                            if (field.isFromBaseAndEdit()){
+                            if (field.isFromBaseAndEdit()) {
                                 fieldTextView.setText(inputEditText.getText());
                             }
                             imageButton.setVisibility(View.INVISIBLE);
@@ -278,6 +334,21 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                 });
             }
         });
+
+        if (field.isWriteInBase()){
+            imageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(CreateNewEntityDialogActivity.this, CreateNewEntityDialogActivity.class);
+                    String nameEntityClass = field.getNameEntityClass();
+                    if (!nameEntityClass.equals("")) {
+                        intent.putExtra("typeOfEntity", nameEntityClass);
+                    }
+                    startForResult.launch(intent);
+                }
+            });
+        }
+
 
         inputEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -298,10 +369,10 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                         @Override
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                            if (field.isFromBaseAndEdit()){
-                                                inputEditText.setText(x.get(position));
+                                            if (field.isFromBaseAndEdit()) {
+                                                inputEditText.setText(x.get(position) +" ");
                                                 inputEditText.setSelection(inputEditText.getText().length());
-                                            }else {
+                                            } else {
                                                 fieldTextView.setText(x.get(position));
                                                 hideKeyboard(context, inputEditText);
                                                 inputEditText.setVisibility(View.INVISIBLE);

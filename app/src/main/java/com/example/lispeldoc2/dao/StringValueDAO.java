@@ -20,4 +20,7 @@ public interface StringValueDAO {
 
     @Query("SELECT * FROM string_value_table WHERE name LIKE :name AND title =:title")
     LiveData<StringValue>getEntityByName(String title, String name);
+
+    @Query("SELECT * FROM string_value_table WHERE name LIKE :name")
+    LiveData<List<StringValue>> getAllEntitiesByName(String name);
 }

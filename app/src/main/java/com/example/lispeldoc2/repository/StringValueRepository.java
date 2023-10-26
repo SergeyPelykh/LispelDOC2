@@ -2,16 +2,21 @@ package com.example.lispeldoc2.repository;
 
 import android.app.Application;
 
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.lispeldoc2.dao.StringValueDAO;
 import com.example.lispeldoc2.database.LispelRoomDatabase;
+import com.example.lispeldoc2.interfaces.Repository;
+import com.example.lispeldoc2.interfaces.SavingObject;
+import com.example.lispeldoc2.models.PrintUnit;
 import com.example.lispeldoc2.models.StringValue;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class StringValueRepository {
+public class StringValueRepository implements Repository {
     private String title;
     private StringValueDAO stringValueDAO;
 
@@ -36,4 +41,36 @@ public class StringValueRepository {
         return stringValueDAO.getAllEntities(title);
     }
 
+    @Override
+    public LiveData<Long> insert(SavingObject savingObject) {
+        return null;
+    }
+
+    @Override
+    public LiveData<List<String>> getNameAllEntities(LifecycleOwner owner) {
+        return null;
+    }
+
+    @Override
+    public LiveData<List<String>> getNameAllEntitiesByProperty(LifecycleOwner owner, String property) {
+        MutableLiveData<List<String>> result = new MutableLiveData<>();
+        ArrayList<String> arrayList = new ArrayList();
+        if (!property.equals("")){
+            stringValueDAO.getAllEntitiesByName("%" + property + "%").observe(owner, x -> {
+                for (StringValue p : x) {
+                    arrayList.add(p.getId() + ": " + p.getName());
+                }
+                result.postValue(arrayList);
+            });
+            return result;
+        } else {
+            stringValueDAO.getAllEntitiesByName("%" + property + "%").observe(owner, x -> {
+                for (StringValue p : x) {
+                    arrayList.add(p.getId() + ": " + p.getName());
+                }
+                result.postValue(arrayList);
+            });
+            return result;
+        }
+    }
 }

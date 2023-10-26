@@ -12,7 +12,8 @@ public class Order {
             name_title = "клиент",
             input_type = 8192,
             base = RepositoryEnum.SAVE_IN_BASE,
-            repository = com.example.lispeldoc2.repository.PrintUnitRepository.class)
+            repository = com.example.lispeldoc2.repository.PrintUnitRepository.class,
+            class_entity = "com.example.lispeldoc2.models.Order")
     private Client client;
     @LispelAddValueByUser(number = 2,
             name = "услуги",

@@ -21,6 +21,7 @@ public class Field {
     private String inscription;
     private String savedValueName;
     private String linkedValueName;
+    private String nameEntityClass;
 
     public Field() {
         this.writeInBase = false;
@@ -28,8 +29,16 @@ public class Field {
         this.nameTextViewVisibility = 0x00000000;
         this.nameTextEditVisibility = 0x00000004;
         this.imageButtonVisibility = 0x00000004;
-        this.inscriptionTextViewVisibility = 0x00000000;
+        this.inscriptionTextViewVisibility = 0x00000004;
         this.listDataVisibility = 0x00000008;
+    }
+
+    public String getNameEntityClass() {
+        return nameEntityClass;
+    }
+
+    public void setNameEntityClass(String nameEntityClass) {
+        this.nameEntityClass = nameEntityClass;
     }
 
     public String getSavedValueName() {

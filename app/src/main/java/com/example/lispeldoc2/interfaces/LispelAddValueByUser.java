@@ -15,4 +15,6 @@ public @interface LispelAddValueByUser {
     int input_type();
     RepositoryEnum base() default RepositoryEnum.NO_BASE;
     Class repository() default Object.class;
+    String class_entity() default "";
+    String repository_title() default "";
 }

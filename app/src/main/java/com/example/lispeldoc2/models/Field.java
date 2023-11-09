@@ -8,6 +8,7 @@ import com.example.lispeldoc2.interfaces.Repository;
 public class Field {
     private long id;
     private String name;
+    private String resultId;
     private int inputType;
     private int nameTextViewVisibility;
     private int nameTextEditVisibility;
@@ -24,6 +25,7 @@ public class Field {
     private String nameEntityClass;
 
     public Field() {
+        this.resultId = "";
         this.writeInBase = false;
         this.fromBaseAndEdit = false;
         this.nameTextViewVisibility = 0x00000000;
@@ -159,5 +161,13 @@ public class Field {
 
     public void setDataSource(Repository dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public String getResultId() {
+        return resultId;
+    }
+
+    public void setResultId(String resultId) {
+        this.resultId = resultId;
     }
 }

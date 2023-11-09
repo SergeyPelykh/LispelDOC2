@@ -1,19 +1,30 @@
 package com.example.lispeldoc2.models;
 
+import android.app.Application;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import com.example.lispeldoc2.interfaces.LispelAddValueByUser;
 import com.example.lispeldoc2.interfaces.LispelCreateFieldObject;
+import com.example.lispeldoc2.interfaces.Repository;
 import com.example.lispeldoc2.interfaces.SavingObject;
 import com.example.lispeldoc2.repository.PrintUnitRepository;
 import com.example.lispeldoc2.utilities.Convert;
 
+import java.util.ArrayList;
 import java.util.Date;
 @LispelCreateFieldObject(repository_class = PrintUnitRepository.class)
 @Entity(tableName = "printUnit_table")
 public class PrintUnit implements SavingObject{
+
+
+    @Override
+    public Repository getRepository(Application application, String title) {
+        return new PrintUnitRepository(application);
+    }
+
     @PrimaryKey(autoGenerate = true)
     private Long id;
     @TypeConverters({Convert.class})
@@ -75,6 +86,16 @@ public class PrintUnit implements SavingObject{
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String getDescription() {
+        return vendor + " " + model;
+    }
+
+    @Override
+    public SavingObject createEntityFromList(ArrayList<String> arrayList) {
+        return null;
     }
 
     public void setId(Long id) {

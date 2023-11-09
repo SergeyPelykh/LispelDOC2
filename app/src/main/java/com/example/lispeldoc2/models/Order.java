@@ -1,19 +1,28 @@
 package com.example.lispeldoc2.models;
 
 import com.example.lispeldoc2.interfaces.LispelAddValueByUser;
+import com.example.lispeldoc2.interfaces.LispelCreateRepository;
 import com.example.lispeldoc2.interfaces.RepositoryEnum;
 
 import java.util.ArrayList;
 
 public class Order {
     @LispelAddValueByUser(number = 1,
-            name = "клиент",
-            name_hint = "клиент",
-            name_title = "клиент",
+            name = "toner",
+            name_hint = "toner",
+            name_title = "toner",
             input_type = 8192,
             base = RepositoryEnum.SAVE_IN_BASE,
-            repository = com.example.lispeldoc2.repository.PrintUnitRepository.class,
-            class_entity = "com.example.lispeldoc2.models.Order")
+            class_entity = "com.example.lispeldoc2.models.Toner"
+    )
+//            name = "клиент",
+//            name_hint = "клиент",
+//            name_title = "клиент",
+//            input_type = 8192,
+//            base = RepositoryEnum.SAVE_IN_BASE,
+//            repository = com.example.lispeldoc2.repository.ClientRepository.class,
+//            class_entity = "com.example.lispeldoc2.models.Client")
+   // @LispelCreateRepository(dao = com.example.lispeldoc2.dao.TonerDAO.class)
     private Client client;
     @LispelAddValueByUser(number = 2,
             name = "услуги",

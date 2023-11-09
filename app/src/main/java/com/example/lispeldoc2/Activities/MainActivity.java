@@ -94,6 +94,24 @@ public class MainActivity extends AppCompatActivity {
                                 + x.size() + " entities");
                     }
                 });
+                StringValueRepository stringValueRepository1 = new StringValueRepository(getApplication(), "clientType");
+                stringValueRepository1.getAllEntities().observe(MainActivity.this, x -> {
+                    if (x.size() == 0) {
+                        String line = "";
+                        try (
+                                BufferedReader bufferedReader = new BufferedReader(
+                                        new InputStreamReader(getAssets().open("typeOfClient.txt")))) {
+                            while ((line = bufferedReader.readLine()) != null) {
+                                stringValueRepository1.insert(new StringValue("clientType", line));
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        addNewLineToTextView(mainTextView, "in stringValueRepository inserted "
+                                + x.size() + " entities");
+                    }
+                });
 
 
             }
@@ -148,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, CreateNewEntityDialogActivity.class);
-                intent.putExtra("typeOfEntity", "com.example.lispeldoc2.models.Client");
+                intent.putExtra("nameEntityClass", "com.example.lispeldoc2.models.Order");
                 startForResult.launch(intent);
             }
         });

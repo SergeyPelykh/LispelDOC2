@@ -56,7 +56,7 @@ public class StringValueRepository implements Repository {
         MutableLiveData<List<String>> result = new MutableLiveData<>();
         ArrayList<String> arrayList = new ArrayList();
         if (!property.equals("")){
-            stringValueDAO.getAllEntitiesByName("%" + property + "%").observe(owner, x -> {
+            stringValueDAO.getAllEntitiesByName(title, "%" + property + "%").observe(owner, x -> {
                 for (StringValue p : x) {
                     arrayList.add(p.getId() + ": " + p.getName());
                 }
@@ -64,7 +64,7 @@ public class StringValueRepository implements Repository {
             });
             return result;
         } else {
-            stringValueDAO.getAllEntitiesByName("%" + property + "%").observe(owner, x -> {
+            stringValueDAO.getAllEntitiesByName(title,"%" + property + "%").observe(owner, x -> {
                 for (StringValue p : x) {
                     arrayList.add(p.getId() + ": " + p.getName());
                 }
@@ -72,5 +72,10 @@ public class StringValueRepository implements Repository {
             });
             return result;
         }
+    }
+
+    @Override
+    public LiveData<SavingObject> getEntityById(LifecycleOwner owner, Long id) {
+        return null;
     }
 }

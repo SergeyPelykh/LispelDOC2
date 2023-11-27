@@ -35,7 +35,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent">
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/testButton"
@@ -54,6 +53,11 @@
             android:text="test"/>
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/testButton4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="test"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/testButton5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="test"/>

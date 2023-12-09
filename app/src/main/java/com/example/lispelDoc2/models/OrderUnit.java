@@ -30,7 +30,7 @@ public class OrderUnit implements SavingObject {
             name = "номер стикера",
             name_hint = "номер стикера",
             name_title = "номер стикера",
-            base = RepositoryEnum.SAVE_IN_BASE,
+            base = RepositoryEnum.SAVE_IN_BASE_AND_NOT_TO_DISPLAY,
             class_entity = "com.example.lispelDoc2.models.Sticker",
             input_type = 1)
     private String stickerNumber;
@@ -88,7 +88,7 @@ public class OrderUnit implements SavingObject {
 
     @Override
     public String getDescription() {
-        return this.stickerNumber + " (" + this.printUnitName + ")";
+        return this.stickerNumber;
     }
 
 }

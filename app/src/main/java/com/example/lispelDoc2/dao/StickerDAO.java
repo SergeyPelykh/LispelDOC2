@@ -24,4 +24,7 @@ public interface StickerDAO {
 
     @Query("SELECT * FROM sticker_table WHERE id = :id")
     LiveData<Sticker> getEntityById(Long id);
+
+    @Query("SELECT * FROM sticker_table ORDER BY dateOfCreate DESC LIMIT 1")
+    LiveData<Sticker> getLastEntity();
 }

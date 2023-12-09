@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -34,6 +35,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.lispelDoc2.R;
+import com.example.lispelDoc2.dao.StickerDAO;
+import com.example.lispelDoc2.database.LispelRoomDatabase;
 import com.example.lispelDoc2.interfaces.LispelAddValueByUser;
 import com.example.lispelDoc2.interfaces.LispelCreateRepository;
 import com.example.lispelDoc2.interfaces.LispelDAO;
@@ -41,11 +44,24 @@ import com.example.lispelDoc2.interfaces.Repository;
 import com.example.lispelDoc2.interfaces.RepositoryEnum;
 import com.example.lispelDoc2.interfaces.SavingObject;
 import com.example.lispelDoc2.models.Field;
+import com.example.lispelDoc2.models.StringValue;
 import com.example.lispelDoc2.uiServices.FieldSetViews;
+import com.example.lispelDoc2.utilities.StringConstants;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLClientInfoException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +191,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                     }
                     if (savingObject != null) {
                         Repository repository = null;
-                        if (!intent.getStringExtra("repositoryTitle").equals("")){
+                        if (!intent.getStringExtra("repositoryTitle").equals("")) {
                             savingObject.setTitle(intent.getStringExtra("repositoryTitle"));
                             repository = createRepository(intent.getStringExtra("nameEntityClass"), intent.getStringExtra("repositoryTitle"));
                         } else {
@@ -196,8 +212,6 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                 }
                             });
                         }
-
-
                     }
                 }
             }
@@ -215,19 +229,24 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                     field.setInputType(annotationStringValueRepository.input_type());
                     field.setNameEntityClass(annotationStringValueRepository.class_entity());
                     field.setLinkedValueName(annotationStringValueRepository.repository_title());
+                    field.setTemplateValue(annotationStringValueRepository.template_value());
+                    field.setHasTemplateValue(annotationStringValueRepository.hasTemplate_value());
 
-                    if (annotationStringValueRepository.base() == RepositoryEnum.SAVE_IN_BASE) {
+                    if (annotationStringValueRepository.base() == RepositoryEnum.SAVE_IN_BASE
+                            || annotationStringValueRepository.base() == RepositoryEnum.SAVE_IN_BASE_AND_NOT_TO_DISPLAY) {
                         field.setWriteInBase(true);
                     }
                     if (annotationStringValueRepository.base() == RepositoryEnum.READ_FROM_BASE_AND_EDIT) {
                         field.setFromBaseAndEdit(true);
                     }
+                    if (annotationStringValueRepository.base() == RepositoryEnum.SAVE_IN_BASE_AND_NOT_TO_DISPLAY) {
+                        field.setDisplayOptionsWhenCreate(false);
+                    }
 
-
-                    Repository repository = null;
+                        Repository repository = null;
 
                     //Class repositoryClass = annotationStringValueRepository.repository();
-                    if (!annotationStringValueRepository.repository_title().equals("")){
+                    if (!annotationStringValueRepository.repository_title().equals("")) {
                         repository = createRepository(annotationStringValueRepository.class_entity(), annotationStringValueRepository.repository_title());
                     } else {
                         repository = createRepository(annotationStringValueRepository.class_entity());
@@ -308,6 +327,16 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                 inputEditText.setVisibility(View.VISIBLE);
                 inputEditText.setSelection(inputEditText.getText().length());
 
+                if (field.getName().equals("номер стикера") && field.isHasTemplateValue()) {
+                    LispelRoomDatabase lispelRoomDatabase = LispelRoomDatabase.getDatabase(CreateNewEntityDialogActivity.this);
+                    StickerDAO stickerDAO = lispelRoomDatabase.stickerDAO();
+                    stickerDAO.getLastEntity().observe(CreateNewEntityDialogActivity.this, lastEntity -> {
+                        if (lastEntity != null) {
+                            inputEditText.setText(lastEntity.getNumber().substring(2));
+                            inputEditText.setSelection(inputEditText.getText().length());
+                        }
+                    });
+                }
 
                 listView.setAdapter(adapter);
 
@@ -319,7 +348,9 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                 if (x.size() != 0) {
                                     adapter.clear();
                                     adapter.addAll(x);
-                                    listView.setVisibility(View.VISIBLE);
+                                    if (field.isDisplayOptionsWhenCreate()){
+                                        listView.setVisibility(View.VISIBLE);
+                                    }
                                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                         @Override
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -379,7 +410,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK && result.getData().getStringExtra(field.getName()) != null) {
                             Repository resultRepository;
-                            if (!field.getLinkedValueName().equals("")){
+                            if (!field.getLinkedValueName().equals("")) {
                                 resultRepository = createRepository(field.getNameEntityClass(), field.getLinkedValueName());
                             } else {
                                 resultRepository = createRepository(field.getNameEntityClass());
@@ -396,8 +427,8 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                             titleTextView.setVisibility(View.VISIBLE);
                                             fieldTextView.setVisibility(View.VISIBLE);
                                         });
-                            }else {
-                                Toast.makeText(getApplicationContext(), "database not created",Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "database not created", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -433,7 +464,9 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                     LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this, s.toString());
                     allEntity.observe(CreateNewEntityDialogActivity.this, x -> {
                         if (x.size() != 0) {
-                            listView.setVisibility(View.VISIBLE);
+                            if (field.isDisplayOptionsWhenCreate()){
+                                listView.setVisibility(View.VISIBLE);
+                            }
                             adapter.clear();
                             adapter.addAll(x);
                             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -482,7 +515,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
         return true;
     }
 
-    private Repository createRepository(String ... args) {
+    private Repository createRepository(String... args) {
         String entityName = args[0];
         String titleForStringValueDAO = "";
         if (args.length > 1) {
@@ -499,7 +532,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
             LispelDAO dao = (LispelDAO) annotation.dao().getConstructor(Application.class)
                     .newInstance(getApplication());
 
-            if (!titleForStringValueDAO.equals("")){
+            if (!titleForStringValueDAO.equals("")) {
                 dao.setTitle(titleForStringValueDAO);
             }
 

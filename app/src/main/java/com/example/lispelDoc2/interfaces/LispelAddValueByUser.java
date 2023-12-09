@@ -18,4 +18,6 @@ public @interface LispelAddValueByUser {
     Class dao() default Object.class;
     String class_entity() default "";
     String repository_title() default "";
+    String template_value() default "";
+    boolean hasTemplate_value() default false;
 }

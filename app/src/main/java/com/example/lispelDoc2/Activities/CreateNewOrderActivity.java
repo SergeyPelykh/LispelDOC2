@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -17,6 +18,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,23 +35,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lispelDoc2.R;
-import com.example.lispelDoc2.dao.proxyDAO.ServiceProxyDAO;
+import com.example.lispelDoc2.dao.ClientDAO;
+import com.example.lispelDoc2.dao.OrderUnitDAO;
 import com.example.lispelDoc2.database.LispelRoomDatabase;
 import com.example.lispelDoc2.interfaces.LispelCreateRepository;
 import com.example.lispelDoc2.interfaces.LispelDAO;
 import com.example.lispelDoc2.interfaces.Repository;
 import com.example.lispelDoc2.interfaces.SavingObject;
+import com.example.lispelDoc2.models.Client;
 import com.example.lispelDoc2.models.Field;
+import com.example.lispelDoc2.models.OrderUnit;
 import com.example.lispelDoc2.uiServices.FieldSetViews;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CreateNewOrderActivity extends AppCompatActivity {
 
     ArrayList<FieldSetViews> allFieldsOnLayout = new ArrayList<>();
+    MutableLiveData<String> clientLiveData = new MutableLiveData<>();
+    MutableLiveData<String> orderUnitLiveData = new MutableLiveData<>();
+    ArrayList<String> clientOrderUnits = new ArrayList<>();
+    Client client = null;
+    OrderUnit orderUnit = null;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +83,6 @@ public class CreateNewOrderActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
 
 
         ArrayList<ListView> baseOptionListViews = new ArrayList<>();
@@ -125,24 +138,103 @@ public class CreateNewOrderActivity extends AppCompatActivity {
             i.setVisibility(View.INVISIBLE);
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(CreateNewOrderActivity.this,
-                android.R.layout.simple_list_item_1,
-                new ArrayList<>());
 
-        visionTextViews.get(0).setVisibility(View.VISIBLE);
-        visionTextViews.get(0).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                visionTextViews.get(0).setVisibility(View.INVISIBLE);
-                inputEditTexts.get(0).setVisibility(View.VISIBLE);
-                showKeyboard(CreateNewOrderActivity.this, inputEditTexts.get(0));
-            }
+        ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
+        OrderUnitDAO orderUnitDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).orderUnitDAO();
+
+        clientLiveData.observe(CreateNewOrderActivity.this, insertedValue -> {
+            clientDAO.getEntityByName(insertedValue).observe(CreateNewOrderActivity.this, foundedObject -> {
+                if (foundedObject != null) {
+                    if (client == null || !client.getName().equals(foundedObject.getName())){
+                        client = foundedObject;
+                        visionTextViews.get(0).setText(client.getName());
+                        clientOrderUnits.clear();
+
+                        orderUnitDAO.getAllEntitiesByOwner(client.getName()).observe(CreateNewOrderActivity.this, foundedObjects -> {
+                            if (foundedObjects != null && !foundedObjects.isEmpty()) {
+                                for (OrderUnit o : foundedObjects) {
+                                    clientOrderUnits.add(o.getStickerNumber());
+                                }
+                                orderUnit = foundedObjects.get(0);
+                                if (!clientOrderUnits.contains(visionTextViews.get(1).getText())){
+                                    visionTextViews.get(1).setText(orderUnit.getStickerNumber());
+                                }
+
+                            } else {
+                                visionTextViews.get(1).setText("");
+                                orderUnitLiveData.postValue(null);
+                            }
+                        });
+                    }
+                } else if (client != null && !clientOrderUnits.contains(orderUnit.getStickerNumber())){
+
+                }
+                else {
+                    client = null;
+                    orderUnit = null;
+                    clientOrderUnits.clear();
+                    visionTextViews.get(1).setText("");
+                    visionTextViews.get(0).setText("");
+                }
+            });
+
         });
 
 
+        orderUnitLiveData.observe(CreateNewOrderActivity.this, insertedValue -> {
+            orderUnitDAO.getAllEntitiesByStickerNumber(insertedValue).observe(CreateNewOrderActivity.this, foundedObject -> {
+                if (foundedObject != null && !foundedObject.isEmpty()) {
+                    orderUnit = foundedObject.get(0);
+                    visionTextViews.get(1).setText(orderUnit.getStickerNumber());
+                    clientLiveData.postValue(orderUnit.getOwnerName());
+                } else {
+                    orderUnit = null;
+                    visionTextViews.get(1).setText("");
+                }
+            });
+
+
+        });
+
+        Field field = new Field();
+        field.setName("Заказчик");
+        field.setHint("Заказчик");
+        field.setInscription("Заказчик");
+        field.setInputType(1);
+        field.setWriteInBase(true);
+        field.setNameEntityClass("com.example.lispelDoc2.models.Client");
+        field.setDataSource(createRepository("com.example.lispelDoc2.models.Client"));
+
+        inputFieldService(CreateNewOrderActivity.this,
+                visionTextViews.get(0),
+                inscriptionTextViews.get(0),
+                inputEditTexts.get(0),
+                baseOptionListViews.get(0),
+                addImageButtons.get(0),
+                field,
+                orderUnitLiveData,
+                clientLiveData);
+
+
+        Field field2 = new Field();
+        field2.setName("Картридж");
+        field2.setHint("Картридж");
+        field2.setInscription("Картридж");
+        field2.setInputType(1);
+        field2.setWriteInBase(true);
+        field2.setNameEntityClass("com.example.lispelDoc2.models.OrderUnit");
+        field2.setDataSource(createRepository("com.example.lispelDoc2.models.OrderUnit"));
+
+        inputFieldService(CreateNewOrderActivity.this,
+                visionTextViews.get(1),
+                inscriptionTextViews.get(1),
+                inputEditTexts.get(1),
+                baseOptionListViews.get(1),
+                addImageButtons.get(1),
+                field2,
+                clientLiveData,
+                orderUnitLiveData);
     }
-
-
 
 
     @SuppressLint("WrongConstant")
@@ -152,7 +244,9 @@ public class CreateNewOrderActivity extends AppCompatActivity {
                                    EditText inputEditText,
                                    ListView listView,
                                    ImageButton imageButton,
-                                   Field field) {
+                                   Field field,
+                                   MutableLiveData<String> liveData,
+                                   MutableLiveData<String> resultLiveData) {
         FieldSetViews fieldSetViews = new FieldSetViews(
                 field.getInscription(),
                 field.getName(),
@@ -173,6 +267,52 @@ public class CreateNewOrderActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(CreateNewOrderActivity.this,
                 android.R.layout.simple_list_item_1,
                 new ArrayList<>());
+
+        ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK && result.getData().getStringExtra(field.getName()) != null) {
+                            Repository resultRepository;
+                            if (!field.getLinkedValueName().equals("")) {
+                                resultRepository = createRepository(field.getNameEntityClass(), field.getLinkedValueName());
+                            } else {
+                                resultRepository = createRepository(field.getNameEntityClass());
+                            }
+                            if (!(resultRepository == null)) {
+                                resultRepository.getEntityById(CreateNewOrderActivity.this, Long.parseLong(result.getData().getStringExtra(field.getName())))
+                                        .observe(CreateNewOrderActivity.this, x -> {
+                                            fieldTextView.setText(x.getDescription());
+                                            resultLiveData.postValue(x.getDescription());
+                                            hideKeyboard(context, inputEditText);
+                                            inputEditText.setVisibility(View.INVISIBLE);
+                                            imageButton.setVisibility(View.INVISIBLE);
+                                            adapter.clear();
+                                            listView.setVisibility(View.GONE);
+                                            titleTextView.setVisibility(View.VISIBLE);
+                                            fieldTextView.setVisibility(View.VISIBLE);
+                                        });
+                            } else {
+                                Toast.makeText(getApplicationContext(), "database not created", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+        );
+
+
+        View.OnClickListener imageButtonOnClickListener = v -> {
+            Intent intent = new Intent(CreateNewOrderActivity.this, CreateNewEntityDialogActivity.class);
+            String nameEntityClass = field.getNameEntityClass();
+            if (!nameEntityClass.equals("")) {
+                intent.putExtra("nameEntityClass", nameEntityClass);
+                intent.putExtra("createEntity", field.getName());
+                intent.putExtra("repositoryTitle", field.getLinkedValueName());
+            }
+            startForResult.launch(intent);
+        };
+
 
         fieldTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,28 +336,45 @@ public class CreateNewOrderActivity extends AppCompatActivity {
                             fieldTextView.getText().toString());
                     allEntity.observe(CreateNewOrderActivity.this, x -> {
                                 allEntity.removeObservers(CreateNewOrderActivity.this);
-                                if (x.size() != 0) {
-                                    adapter.clear();
-                                    adapter.addAll(x);
-                                    listView.setVisibility(View.VISIBLE);
-                                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                        @Override
-                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                            if (field.isFromBaseAndEdit()) {
-                                                inputEditText.setText(x.get(position) + " ");
-                                                inputEditText.setSelection(inputEditText.getText().length());
-                                            } else {
-                                                fieldTextView.setText(x.get(position));
-                                                hideKeyboard(context, inputEditText);
-                                                inputEditText.setVisibility(View.INVISIBLE);
-                                                imageButton.setVisibility(View.INVISIBLE);
-                                                titleTextView.setVisibility(View.VISIBLE);
-                                                fieldTextView.setVisibility(View.VISIBLE);
+
+
+                                if (field.getName().equals("Картридж")) {
+                                    if (x.size() != 0) {
+                                        if (!clientOrderUnits.isEmpty()) {
+                                            ArrayList<String> arr = new ArrayList<>();
+                                            for (String s : x) {
+                                                if (!clientOrderUnits.contains(s)) {
+                                                    arr.add(s);
+                                                }
                                             }
-                                            listView.setVisibility(View.GONE);
+                                            x.removeAll(arr);
+                                        } else if (clientOrderUnits.isEmpty() && client != null) {
+                                            x.clear();
                                         }
-                                    });
+                                    }
                                 }
+
+                                adapter.clear();
+                                adapter.addAll(x);
+                                listView.setVisibility(View.VISIBLE);
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        if (field.isFromBaseAndEdit()) {
+                                            inputEditText.setText(x.get(position) + " ");
+                                            inputEditText.setSelection(inputEditText.getText().length());
+                                        } else {
+                                            hideKeyboard(context, inputEditText);
+                                            inputEditText.setVisibility(View.INVISIBLE);
+                                            imageButton.setVisibility(View.INVISIBLE);
+                                            titleTextView.setVisibility(View.VISIBLE);
+                                            fieldTextView.setVisibility(View.VISIBLE);
+                                        }
+                                        listView.setVisibility(View.GONE);
+                                        resultLiveData.postValue(x.get(position));
+                                    }
+                                });
+
                             }
                     );
                     if (field.isWriteInBase()) {
@@ -238,6 +395,10 @@ public class CreateNewOrderActivity extends AppCompatActivity {
                             if (field.isFromBaseAndEdit()) {
                                 fieldTextView.setText(inputEditText.getText());
                             }
+                            if (inputEditText.getText().length() == 0) {
+                                fieldTextView.setText("");
+                                clientLiveData.postValue("");
+                            }
                             imageButton.setVisibility(View.INVISIBLE);
                             inputEditText.setVisibility(View.INVISIBLE);
                             listView.setVisibility(View.GONE);
@@ -252,52 +413,9 @@ public class CreateNewOrderActivity extends AppCompatActivity {
             }
         });
 
-        ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK && result.getData().getStringExtra(field.getName()) != null) {
-                            Repository resultRepository;
-                            if (!field.getLinkedValueName().equals("")){
-                                resultRepository = createRepository(field.getNameEntityClass(), field.getLinkedValueName());
-                            } else {
-                                resultRepository = createRepository(field.getNameEntityClass());
-                            }
-                            if (!(resultRepository == null)) {
-                                resultRepository.getEntityById(CreateNewOrderActivity.this, Long.parseLong(result.getData().getStringExtra(field.getName())))
-                                        .observe(CreateNewOrderActivity.this, x -> {
-                                            fieldTextView.setText(x.getDescription());
-                                            hideKeyboard(context, inputEditText);
-                                            inputEditText.setVisibility(View.INVISIBLE);
-                                            imageButton.setVisibility(View.INVISIBLE);
-                                            adapter.clear();
-                                            listView.setVisibility(View.GONE);
-                                            titleTextView.setVisibility(View.VISIBLE);
-                                            fieldTextView.setVisibility(View.VISIBLE);
-                                        });
-                            }else {
-                                Toast.makeText(getApplicationContext(), "database not created",Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                }
-        );
 
         if (field.isWriteInBase()) {
-            imageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(CreateNewOrderActivity.this, CreateNewEntityDialogActivity.class);
-                    String nameEntityClass = field.getNameEntityClass();
-                    if (!nameEntityClass.equals("")) {
-                        intent.putExtra("nameEntityClass", nameEntityClass);
-                        intent.putExtra("createEntity", field.getName());
-                        intent.putExtra("repositoryTitle", field.getLinkedValueName());
-                    }
-                    startForResult.launch(intent);
-                }
-            });
+            imageButton.setOnClickListener(imageButtonOnClickListener);
         }
 
 
@@ -313,6 +431,23 @@ public class CreateNewOrderActivity extends AppCompatActivity {
                     LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewOrderActivity.this, s.toString());
                     allEntity.observe(CreateNewOrderActivity.this, x -> {
                         if (x.size() != 0) {
+
+                            if (field.getName().equals("Картридж")) {
+                                if (x.size() != 0) {
+                                    if (!clientOrderUnits.isEmpty()) {
+                                        ArrayList<String> arr = new ArrayList<>();
+                                        for (String str : x) {
+                                            if (!clientOrderUnits.contains(str)) {
+                                                arr.add(str);
+                                            }
+                                        }
+                                        x.removeAll(arr);
+                                    } else if (clientOrderUnits.isEmpty() && client != null) {
+                                        x.clear();
+                                    }
+                                }
+                            }
+
                             listView.setVisibility(View.VISIBLE);
                             adapter.clear();
                             adapter.addAll(x);
@@ -331,6 +466,7 @@ public class CreateNewOrderActivity extends AppCompatActivity {
                                         fieldTextView.setVisibility(View.VISIBLE);
                                     }
                                     listView.setVisibility(View.GONE);
+                                    resultLiveData.postValue(x.get(position));
                                 }
                             });
                         } else {
@@ -338,6 +474,19 @@ public class CreateNewOrderActivity extends AppCompatActivity {
                             listView.setVisibility(View.GONE);
                         }
                         allEntity.removeObservers(CreateNewOrderActivity.this);
+                        if (inputEditText.getText().length() > 0) {
+                            imageButton.setBackground(getDrawable(R.drawable.ic_baseline_close_24));
+                            imageButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    inputEditText.setText("");
+                                    if (field.isWriteInBase()) {
+                                        imageButton.setBackground(getDrawable(R.drawable.ic_baseline_add_24));
+                                        imageButton.setOnClickListener(imageButtonOnClickListener);
+                                    }
+                                }
+                            });
+                        }
                     });
                 }
             }
@@ -362,7 +511,7 @@ public class CreateNewOrderActivity extends AppCompatActivity {
         return true;
     }
 
-    private Repository createRepository(String ... args) {
+    private Repository createRepository(String... args) {
         String entityName = args[0];
         String titleForStringValueDAO = "";
         if (args.length > 1) {
@@ -379,7 +528,7 @@ public class CreateNewOrderActivity extends AppCompatActivity {
             LispelDAO dao = (LispelDAO) annotation.dao().getConstructor(Application.class)
                     .newInstance(getApplication());
 
-            if (!titleForStringValueDAO.equals("")){
+            if (!titleForStringValueDAO.equals("")) {
                 dao.setTitle(titleForStringValueDAO);
             }
 
@@ -454,7 +603,6 @@ public class CreateNewOrderActivity extends AppCompatActivity {
         }
         return null;
     }
-
 
 
     private void showKeyboard(Context context, EditText input) {

@@ -24,6 +24,9 @@ public interface OrderUnitDAO {
     @Query("SELECT * FROM orderUnit_table WHERE stickerNumber LIKE :stickerNumber")
     LiveData<List<OrderUnit>> getAllEntitiesByStickerNumber(String stickerNumber);
 
+    @Query("SELECT * FROM orderUnit_table WHERE ownerName LIKE :ownerName")
+    LiveData<List<OrderUnit>> getAllEntitiesByOwner(String ownerName);
+
     @Query("SELECT * FROM orderUnit_table WHERE id = :id")
     LiveData<OrderUnit> getEntityById(Long id);
 }

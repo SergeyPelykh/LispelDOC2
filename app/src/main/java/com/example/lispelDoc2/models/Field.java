@@ -14,10 +14,12 @@ public class Field {
     private int listDataVisibility;
     private boolean writeInBase;
     private boolean fromBaseAndEdit;
+    private boolean displayOptionsWhenCreate;
+    private boolean hasTemplateValue;
     private Repository dataSource;
     private String hint;
     private String inscription;
-    private String savedValueName;
+    private String templateValue;
     private String linkedValueName;
     private String nameEntityClass;
 
@@ -25,11 +27,22 @@ public class Field {
         this.resultId = "";
         this.writeInBase = false;
         this.fromBaseAndEdit = false;
+        this.displayOptionsWhenCreate = true;
+        this.hasTemplateValue = false;
         this.nameTextViewVisibility = 0x00000000;
         this.nameTextEditVisibility = 0x00000004;
         this.imageButtonVisibility = 0x00000004;
         this.inscriptionTextViewVisibility = 0x00000004;
         this.listDataVisibility = 0x00000008;
+        this.linkedValueName = "";
+    }
+
+    public boolean isHasTemplateValue() {
+        return hasTemplateValue;
+    }
+
+    public void setHasTemplateValue(boolean hasTemplateValue) {
+        this.hasTemplateValue = hasTemplateValue;
     }
 
     public String getNameEntityClass() {
@@ -40,12 +53,12 @@ public class Field {
         this.nameEntityClass = nameEntityClass;
     }
 
-    public String getSavedValueName() {
-        return savedValueName;
+    public String getTemplateValue() {
+        return templateValue;
     }
 
-    public void setSavedValueName(String savedValueName) {
-        this.savedValueName = savedValueName;
+    public void setTemplateValue(String templateValue) {
+        this.templateValue = templateValue;
     }
 
     public String getLinkedValueName() {
@@ -166,5 +179,13 @@ public class Field {
 
     public void setResultId(String resultId) {
         this.resultId = resultId;
+    }
+
+    public boolean isDisplayOptionsWhenCreate() {
+        return displayOptionsWhenCreate;
+    }
+
+    public void setDisplayOptionsWhenCreate(boolean displayOptionsWhenCreate) {
+        this.displayOptionsWhenCreate = displayOptionsWhenCreate;
     }
 }

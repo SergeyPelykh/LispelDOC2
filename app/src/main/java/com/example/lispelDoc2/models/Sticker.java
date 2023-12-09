@@ -17,7 +17,7 @@ import java.util.Date;
         dao = StickerProxyDAO.class,
         entity = com.example.lispelDoc2.models.Sticker.class)
 @Entity(tableName = "sticker_table",
-indices = {@Index(value = {"number"}, unique = true)})
+        indices = {@Index(value = {"number"}, unique = true)})
 public class Sticker implements SavingObject {
     @PrimaryKey(autoGenerate = true)
     private Long id;
@@ -27,7 +27,8 @@ public class Sticker implements SavingObject {
             name = "номер стикера",
             name_hint = "номер стикера",
             name_title = "номер стикера",
-            input_type = 3)
+            input_type = 3,
+            hasTemplate_value = true)
     private String number;
     private Date dateOfCreate;
 
@@ -49,7 +50,7 @@ public class Sticker implements SavingObject {
     }
 
     public void setNumber(String number) {
-        if (!number.contains(StringConstants.companyID)){
+        if (!number.contains(StringConstants.companyID)) {
             this.number = StringConstants.companyID + number;
         } else {
             this.number = number;

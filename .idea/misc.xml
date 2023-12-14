@@ -8,10 +8,11 @@
         <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/drawable-v24/rounded_corner.xml" value="0.2605" />
         <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/font/roboto_light.xml" value="0.28541666666666665" />
         <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/font/roboto_thin.xml" value="0.28541666666666665" />
-        <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/layout/activity_create_new_entity_dialog.xml" value="0.23708206686930092" />
-        <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/layout/activity_create_new_order.xml" value="0.5" />
+        <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/layout/activity_create_new_entity_dialog.xml" value="0.33" />
+        <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/layout/activity_create_new_order.xml" value="0.33" />
         <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/layout/activity_insert_entity_in_base.xml" value="0.2552083333333333" />
         <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/layout/activity_new_order.xml" value="0.33" />
         <entry key="..\:/Users/pelyh/AndroidStudioProjects/LispelDOC2/app/src/main/res/layout/recycler_view_item.xml" value="0.19157608695652173" />
       </map>
     </option>

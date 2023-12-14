@@ -157,8 +157,9 @@ public class MainActivity extends AppCompatActivity {
         testButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Object printUnit = new PrintUnit();
-                displayField(printUnit, mainTextView);
+                Intent intent = new Intent(MainActivity.this, NewOrderActivity.class);
+                intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.Order");
+                startForResult.launch(intent);
             }
         });
 

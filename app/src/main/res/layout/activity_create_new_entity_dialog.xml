@@ -356,7 +356,7 @@ tools:context=".Activities.CreateNewEntityDialogActivity">
         android:background="@drawable/ic_baseline_add_24"
         app:layout_constraintBottom_toBottomOf="@+id/add_entity_field6_textView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field5_textView" />
+        app:layout_constraintTop_toTopOf="@+id/add_entity_field6_textView" />
 
     <TextView
         android:id="@+id/inscription_add_entity_field6_TextView"

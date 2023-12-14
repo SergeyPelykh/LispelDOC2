@@ -12,7 +12,7 @@ public class Order {
             name_title = "клиент",
             input_type = 1,
             base = RepositoryEnum.SAVE_IN_BASE,
-            class_entity = "com.example.lispelDoc2.models.Service"
+            class_entity = "com.example.lispelDoc2.models.Client"
     )
     private Client client;
     @LispelAddValueByUser(number = 2,

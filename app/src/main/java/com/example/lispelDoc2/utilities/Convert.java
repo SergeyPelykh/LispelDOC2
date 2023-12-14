@@ -68,12 +68,12 @@ public class Convert {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @TypeConverter
-    public static List<String> StringToListOfString(String str){
+    public static ArrayList<String> StringToListOfString(String str){
         return str == null ? null : stringToArr(str);
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private static List<String> stringToArr(String str) {
-        List<String> arr = new ArrayList<>();
+    private static ArrayList<String> stringToArr(String str) {
+        ArrayList<String> arr = new ArrayList<>();
         String[] splitStr = str.split("-");
         Stream<String> stream = Stream.of(splitStr);
         stream.forEach(x -> {

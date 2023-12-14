@@ -1,412 +1,438 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".Activities.CreateNewOrderActivity">
-
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/addEntityLinearLayout"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:layout_editor_absoluteX="73dp"
-    tools:layout_editor_absoluteY="99dp">
+    tools:context=".Activities.CreateNewOrderActivity">
 
-    <TextView
-        android:id="@+id/addEntityTitleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <EditText
-        android:id="@+id/add_entity_field_editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:inputType="textCapSentences"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field_textView"
-        app:layout_constraintEnd_toEndOf="@id/add_entity_field_textView"
-        app:layout_constraintStart_toStartOf="@+id/add_entity_field_textView"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field_textView" />
-
-    <TextView
-        android:id="@+id/add_entity_field_textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:hint="имя"
-        android:paddingStart="4dp"
-        android:paddingTop="9dp"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addEntityTitleTextView" />
-
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/add_entity_field_imageButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:background="@drawable/ic_baseline_add_24"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field_textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field_textView" />
-
-    <TextView
-        android:id="@+id/inscription_add_entity_field_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:paddingEnd="8dp"
-        android:text="имя клиента"
-        android:textColor="#3C2929"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field_textView" />
-
-    <ListView
-        android:id="@+id/add_entity_field_ListView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:textColor="#706565"
-        android:textSize="24dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/add_entity_field2_textView"
-        app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field_TextView" />
-
-
-    <EditText
-        android:id="@+id/add_entity_field2_editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field2_textView"
-        app:layout_constraintEnd_toEndOf="@id/add_entity_field2_textView"
-        app:layout_constraintStart_toStartOf="@+id/add_entity_field2_textView"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field2_textView" />
-
-    <TextView
-        android:id="@+id/add_entity_field2_textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:hint="полное имя"
-        android:paddingStart="4dp"
-        android:paddingTop="9dp"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field_ListView" />
-
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/add_entity_field2_imageButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:background="@drawable/ic_baseline_add_24"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field2_textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field2_textView" />
-
-    <TextView
-        android:id="@+id/inscription_add_entity_field2_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:paddingEnd="8dp"
-        android:text="полное имя клиента"
-        android:textColor="#3C2929"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field2_textView" />
-
-    <ListView
-        android:id="@+id/add_entity_field2_ListView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:textColor="#706565"
-        android:textSize="24dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/add_entity_field3_textView"
-        app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field2_TextView" />
-
-    <EditText
-        android:id="@+id/add_entity_field3_editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:inputType="textCapSentences"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field3_textView"
-        app:layout_constraintEnd_toEndOf="@id/add_entity_field3_textView"
-        app:layout_constraintStart_toStartOf="@+id/add_entity_field3_textView"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field3_textView" />
-
-    <TextView
-        android:id="@+id/add_entity_field3_textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:hint="адрес"
-        android:paddingStart="4dp"
-        android:paddingTop="9dp"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field2_ListView" />
-
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/add_entity_field3_imageButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:background="@drawable/ic_baseline_add_24"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field3_textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field3_textView" />
-
-    <TextView
-        android:id="@+id/inscription_add_entity_field3_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:paddingEnd="8dp"
-        android:text="адрес клиента"
-        android:textColor="#3C2929"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field3_textView" />
-
-    <ListView
-        android:id="@+id/add_entity_field3_ListView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:textColor="#706565"
-        android:textSize="24dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/add_entity_field4_textView"
-        app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field3_TextView" />
-
-
-    <EditText
-        android:id="@+id/add_entity_field4_editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field4_textView"
-        app:layout_constraintEnd_toEndOf="@id/add_entity_field4_textView"
-        app:layout_constraintStart_toStartOf="@+id/add_entity_field4_textView"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field4_textView" />
-
-    <TextView
-        android:id="@+id/add_entity_field4_textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:hint="8(999)999 99 99"
-        android:paddingStart="4dp"
-        android:paddingTop="9dp"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field3_ListView" />
-
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/add_entity_field4_imageButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:background="@drawable/ic_baseline_add_24"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field4_textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field4_textView" />
-
-    <TextView
-        android:id="@+id/inscription_add_entity_field4_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:paddingEnd="8dp"
-        android:text="телефон клиента"
-        android:textColor="#3C2929"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field4_textView" />
-
-    <ListView
-        android:id="@+id/add_entity_field4_ListView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:textColor="#706565"
-        android:textSize="24dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/add_entity_field5_textView"
-        app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field4_TextView" />
-
-
-    <EditText
-        android:id="@+id/add_entity_field5_editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field5_textView"
-        app:layout_constraintEnd_toEndOf="@id/add_entity_field5_textView"
-        app:layout_constraintStart_toStartOf="@+id/add_entity_field5_textView"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field5_textView" />
-
-    <TextView
-        android:id="@+id/add_entity_field5_textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:hint="8(999)999 99 99"
-        android:paddingStart="4dp"
-        android:paddingTop="9dp"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field4_ListView" />
-
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/add_entity_field5_imageButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:background="@drawable/ic_baseline_add_24"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field5_textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field5_textView" />
-
-    <TextView
-        android:id="@+id/inscription_add_entity_field5_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:paddingEnd="8dp"
-        android:text="телефон клиента"
-        android:textColor="#3C2929"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field5_textView" />
-
-    <ListView
-        android:id="@+id/add_entity_field5_ListView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:textColor="#706565"
-        android:textSize="24dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/inscription_add_entity_field5_TextView"
-        app:layout_constraintBottom_toTopOf="@+id/add_entity_field6_textView" />
-
-
-    <EditText
-        android:id="@+id/add_entity_field6_editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field6_textView"
-        app:layout_constraintEnd_toEndOf="@id/add_entity_field6_textView"
-        app:layout_constraintStart_toStartOf="@+id/add_entity_field6_textView"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field6_textView" />
-
-    <TextView
-        android:id="@+id/add_entity_field6_textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:hint="физическое лицо"
-        android:paddingStart="4dp"
-        android:paddingTop="9dp"
-        android:textColor="#3C2929"
-        android:textSize="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field5_ListView"/>
-
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/add_entity_field6_imageButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:background="@drawable/ic_baseline_add_24"
-        app:layout_constraintBottom_toBottomOf="@+id/add_entity_field6_textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/add_entity_field5_textView" />
-
-    <TextView
-        android:id="@+id/inscription_add_entity_field6_TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:text="тип клиента"
-        android:textColor="#3C2929"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_entity_field6_textView" />
-
-    <ListView
-        android:id="@+id/add_entity_field6_ListView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/addEntityLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#706565"
-        android:textSize="24dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field6_TextView" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/add_entity_in_base_button"
-        android:layout_width="150dp"
+        <TextView
+            android:id="@+id/addEntityTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+            android:textColor="#3C2929"
+            android:textSize="24dp"
+            app:layout_constraintEnd_toEndOf="@id/addEntityLinearLayout"
+            app:layout_constraintStart_toStartOf="@id/addEntityLinearLayout"
+            app:layout_constraintTop_toTopOf="@id/addEntityLinearLayout" />
+
+
+        <EditText
+            android:id="@+id/add_entity_field_editText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+            android:inputType="textCapSentences"
+            android:textColor="#3C2929"
+            android:textSize="24dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field_textView"
+            app:layout_constraintEnd_toEndOf="@id/add_entity_field_textView"
+            app:layout_constraintStart_toStartOf="@+id/add_entity_field_textView"
+            app:layout_constraintTop_toTopOf="@+id/add_entity_field_textView" />
+
+        <TextView
+            android:id="@+id/add_entity_field_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+            android:hint="имя"
+            android:paddingStart="4dp"
+            android:paddingTop="9dp"
+            android:textColor="#3C2929"
+            android:textSize="24dp"
+            app:layout_constraintEnd_toEndOf="@id/addEntityLinearLayout"
+            app:layout_constraintStart_toStartOf="@id/addEntityLinearLayout"
+            app:layout_constraintTop_toBottomOf="@+id/addEntityTitleTextView" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/add_entity_field_imageButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/ic_baseline_add_24"
+            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field_textView"
+            app:layout_constraintEnd_toEndOf="@id/addEntityLinearLayout"
+            app:layout_constraintTop_toTopOf="@+id/add_entity_field_textView" />
+
+        <TextView
+            android:id="@+id/inscription_add_entity_field_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+            android:paddingEnd="8dp"
+            android:text="имя клиента"
+            android:textColor="#3C2929"
+            android:textSize="14dp"
+            app:layout_constraintEnd_toEndOf="@id/addEntityLinearLayout"
+            app:layout_constraintTop_toBottomOf="@+id/add_entity_field_textView" />
+
+        <ListView
+            android:id="@+id/add_entity_field_ListView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:textColor="#706565"
+            android:textSize="24dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/addEntityLinearLayout"
+            app:layout_constraintStart_toStartOf="@id/addEntityLinearLayout"
+            app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field_TextView" />
+
+
+        <!--        <EditText-->
+        <!--            android:id="@+id/add_entity_field2_editText"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="invisible"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field2_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="@id/add_entity_field2_textView"-->
+        <!--            app:layout_constraintStart_toStartOf="@+id/add_entity_field2_textView"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field2_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/add_entity_field2_textView"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:hint="полное имя"-->
+        <!--            android:paddingStart="4dp"-->
+        <!--            android:paddingTop="9dp"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="@id/addEntityLinearLayout"-->
+        <!--            app:layout_constraintStart_toStartOf="@id/addEntityLinearLayout"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field_ListView" />-->
+
+        <!--        <androidx.appcompat.widget.AppCompatImageButton-->
+        <!--            android:id="@+id/add_entity_field2_imageButton"-->
+        <!--            android:layout_width="24dp"-->
+        <!--            android:layout_height="24dp"-->
+        <!--            android:background="@drawable/ic_baseline_add_24"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field2_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="@id/addEntityLinearLayout"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field2_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/inscription_add_entity_field2_TextView"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:paddingEnd="8dp"-->
+        <!--            android:text="полное имя клиента"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="14dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field2_textView" />-->
+
+        <!--        <ListView-->
+        <!--            android:id="@+id/add_entity_field2_ListView"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="300dp"-->
+        <!--            android:textColor="#706565"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintBottom_toTopOf="@+id/add_entity_field3_textView"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field2_TextView" />-->
+
+        <!--        <EditText-->
+        <!--            android:id="@+id/add_entity_field3_editText"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:inputType="textCapSentences"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="invisible"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field3_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="@id/add_entity_field3_textView"-->
+        <!--            app:layout_constraintStart_toStartOf="@+id/add_entity_field3_textView"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field3_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/add_entity_field3_textView"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:hint="адрес"-->
+        <!--            android:paddingStart="4dp"-->
+        <!--            android:paddingTop="9dp"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field2_ListView" />-->
+
+        <!--        <androidx.appcompat.widget.AppCompatImageButton-->
+        <!--            android:id="@+id/add_entity_field3_imageButton"-->
+        <!--            android:layout_width="24dp"-->
+        <!--            android:layout_height="24dp"-->
+        <!--            android:background="@drawable/ic_baseline_add_24"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field3_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field3_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/inscription_add_entity_field3_TextView"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:paddingEnd="8dp"-->
+        <!--            android:text="адрес клиента"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="14dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field3_textView" />-->
+
+        <!--        <ListView-->
+        <!--            android:id="@+id/add_entity_field3_ListView"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="300dp"-->
+        <!--            android:textColor="#706565"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintBottom_toTopOf="@+id/add_entity_field4_textView"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field3_TextView" />-->
+
+
+        <!--        <EditText-->
+        <!--            android:id="@+id/add_entity_field4_editText"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="invisible"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field4_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="@id/add_entity_field4_textView"-->
+        <!--            app:layout_constraintStart_toStartOf="@+id/add_entity_field4_textView"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field4_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/add_entity_field4_textView"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:hint="8(999)999 99 99"-->
+        <!--            android:paddingStart="4dp"-->
+        <!--            android:paddingTop="9dp"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field3_ListView" />-->
+
+        <!--        <androidx.appcompat.widget.AppCompatImageButton-->
+        <!--            android:id="@+id/add_entity_field4_imageButton"-->
+        <!--            android:layout_width="24dp"-->
+        <!--            android:layout_height="24dp"-->
+        <!--            android:background="@drawable/ic_baseline_add_24"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field4_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field4_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/inscription_add_entity_field4_TextView"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:paddingEnd="8dp"-->
+        <!--            android:text="телефон клиента"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="14dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field4_textView" />-->
+
+        <!--        <ListView-->
+        <!--            android:id="@+id/add_entity_field4_ListView"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="300dp"-->
+        <!--            android:textColor="#706565"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintBottom_toTopOf="@+id/add_entity_field5_textView"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field4_TextView" />-->
+
+
+        <!--        <EditText-->
+        <!--            android:id="@+id/add_entity_field5_editText"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="invisible"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field5_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="@id/add_entity_field5_textView"-->
+        <!--            app:layout_constraintStart_toStartOf="@+id/add_entity_field5_textView"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field5_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/add_entity_field5_textView"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:hint="8(999)999 99 99"-->
+        <!--            android:paddingStart="4dp"-->
+        <!--            android:paddingTop="9dp"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field4_ListView" />-->
+
+        <!--        <androidx.appcompat.widget.AppCompatImageButton-->
+        <!--            android:id="@+id/add_entity_field5_imageButton"-->
+        <!--            android:layout_width="24dp"-->
+        <!--            android:layout_height="24dp"-->
+        <!--            android:background="@drawable/ic_baseline_add_24"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field5_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field5_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/inscription_add_entity_field5_TextView"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:paddingEnd="8dp"-->
+        <!--            android:text="телефон клиента"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="14dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field5_textView" />-->
+
+        <!--        <ListView-->
+        <!--            android:id="@+id/add_entity_field5_ListView"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="300dp"-->
+        <!--            android:textColor="#706565"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintBottom_toTopOf="@+id/add_entity_field6_textView"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/inscription_add_entity_field5_TextView" />-->
+
+
+        <!--        <EditText-->
+        <!--            android:id="@+id/add_entity_field6_editText"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="invisible"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field6_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="@id/add_entity_field6_textView"-->
+        <!--            app:layout_constraintStart_toStartOf="@+id/add_entity_field6_textView"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field6_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/add_entity_field6_textView"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:hint="физическое лицо"-->
+        <!--            android:paddingStart="4dp"-->
+        <!--            android:paddingTop="9dp"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="24dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field5_ListView" />-->
+
+        <!--        <androidx.appcompat.widget.AppCompatImageButton-->
+        <!--            android:id="@+id/add_entity_field6_imageButton"-->
+        <!--            android:layout_width="24dp"-->
+        <!--            android:layout_height="24dp"-->
+        <!--            android:background="@drawable/ic_baseline_add_24"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/add_entity_field6_textView"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/add_entity_field5_textView" />-->
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/inscription_add_entity_field6_TextView"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:fontFamily="@font/roboto_light"-->
+        <!--            android:text="тип клиента"-->
+        <!--            android:textColor="#3C2929"-->
+        <!--            android:textSize="14dp"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/add_entity_field6_textView" />-->
+
+        <!--        <ListView-->
+        <!--            android:id="@+id/add_entity_field6_ListView"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:textColor="#706565"-->
+        <!--            android:textSize="24dp"-->
+        <!--            android:visibility="gone"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field6_TextView" />-->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/list_stickers_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@drawable/rounded_corner_btn"
-        android:fontFamily="@font/roboto_light"
-        android:text="сохранить"
-        android:textAllCaps="false"
-        android:textColor="#3C2929"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@+id/addEntityLinearLayout"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:padding="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/footer_layout"
+        app:layout_constraintTop_toBottomOf="@+id/addEntityLinearLayout">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/cancel_add_entity_in_base_button"
-        android:layout_width="150dp"
+
+        <ListView
+            android:id="@+id/stickers_of_client_ListView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:textColor="#706565"
+            android:textSize="24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/list_stickers_layout"
+            app:layout_constraintTop_toTopOf="@+id/list_stickers_layout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/footer_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@drawable/rounded_corner_btn"
-        android:fontFamily="@font/roboto_light"
-        android:text="отмена"
-        android:textAllCaps="false"
-        android:textColor="#3C2929"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@+id/addEntityLinearLayout"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:padding="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/main_layout">
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/add_entity_in_base_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corner_btn"
+            android:fontFamily="@font/roboto_light"
+            android:text="сохранить"
+            android:textAllCaps="false"
+            android:textColor="#3C2929"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@+id/footer_layout"
+            app:layout_constraintStart_toStartOf="@+id/footer_layout"
+            app:layout_constraintTop_toTopOf="@+id/footer_layout" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/cancel_add_entity_in_base_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corner_btn"
+            android:fontFamily="@font/roboto_light"
+            android:text="отмена"
+            android:textAllCaps="false"
+            android:textColor="#3C2929"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@+id/footer_layout"
+            app:layout_constraintEnd_toEndOf="@+id/footer_layout"
+            app:layout_constraintTop_toTopOf="@+id/footer_layout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

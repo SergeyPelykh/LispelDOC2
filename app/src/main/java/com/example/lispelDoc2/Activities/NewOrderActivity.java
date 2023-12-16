@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.example.lispelDoc2.R;
 import com.example.lispelDoc2.dao.ClientDAO;
 import com.example.lispelDoc2.dao.OrderUnitDAO;
+import com.example.lispelDoc2.dao.StickerDAO;
 import com.example.lispelDoc2.database.LispelRoomDatabase;
 import com.example.lispelDoc2.interfaces.LispelCreateRepository;
 import com.example.lispelDoc2.interfaces.LispelDAO;
@@ -81,7 +82,7 @@ public class NewOrderActivity extends AppCompatActivity {
 
         ArrayList<ListView> baseOptionListViews = new ArrayList<>();
         baseOptionListViews.add(findViewById(R.id.add_entity_field_ListView));
-//        baseOptionListViews.add(findViewById(R.id.add_entity_field2_ListView));
+        baseOptionListViews.add(findViewById(R.id.stickers_of_client_ListView));
 //        baseOptionListViews.add(findViewById(R.id.add_entity_field3_ListView));
 //        baseOptionListViews.add(findViewById(R.id.add_entity_field4_ListView));
 //        baseOptionListViews.add(findViewById(R.id.add_entity_field5_ListView));
@@ -135,13 +136,29 @@ public class NewOrderActivity extends AppCompatActivity {
 
         ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
         OrderUnitDAO orderUnitDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).orderUnitDAO();
+        StickerDAO stickerDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).stickerDAO();
+
+
+        ArrayAdapter<String> adapterStickers = new ArrayAdapter<>(NewOrderActivity.this,
+                android.R.layout.simple_list_item_1,
+                new ArrayList<>());
+        baseOptionListViews.get(1).setAdapter(adapterStickers);
 
         clientLiveData.observe(NewOrderActivity.this, insertedValue -> {
             clientDAO.getEntityByName(insertedValue).observe(NewOrderActivity.this, foundedObject -> {
                 if (foundedObject != null) {
-                        client = foundedObject;
-                        visionTextViews.get(0).setText(client.getName());
-                        clientOrderUnits.clear();
+                    adapterStickers.clear();
+                    client = foundedObject;
+                    visionTextViews.get(0).setText(client.getName());
+                    //System.out.println("******************" + client.getDescription());
+                    clientOrderUnits.clear();
+                    ArrayList<String> stickers = foundedObject.getNumbers();
+                    if (stickers != null && !stickers.isEmpty()) {
+                        adapterStickers.addAll(stickers);
+                        baseOptionListViews.get(1).setVisibility(View.VISIBLE);
+                    }
+                    adapterStickers.add("добавить картридж");
+
                 }
             });
 
@@ -169,14 +186,7 @@ public class NewOrderActivity extends AppCompatActivity {
                 allFieldsOnLayout);
 
 
-
-
-
-
     }
-
-
-
 
 
     @SuppressLint("WrongConstant")
@@ -190,7 +200,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                    MutableLiveData<String> resultLiveData,
                                    LifecycleOwner thisActivity,
                                    ArrayList<FieldSetViews> allFieldsOnLayout
-                                   ) {
+    ) {
         FieldSetViews fieldSetViews = new FieldSetViews(
                 field.getInscription(),
                 field.getName(),
@@ -296,6 +306,8 @@ public class NewOrderActivity extends AppCompatActivity {
                                             titleTextView.setVisibility(View.VISIBLE);
                                             fieldTextView.setVisibility(View.VISIBLE);
                                         }
+
+                                        //System.out.println("**************** insert in LiveData from fieldTextView OnClickListener " + x.get(position).substring(0, x.get(position).indexOf(" ")));
                                         listView.setVisibility(View.GONE);
                                         resultLiveData.postValue(x.get(position));
                                     }
@@ -357,6 +369,7 @@ public class NewOrderActivity extends AppCompatActivity {
                     LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(thisActivity, s.toString());
                     allEntity.observe(thisActivity, x -> {
                         if (x.size() != 0) {
+                            //System.out.println("****************************** get allEntity");
                             listView.setVisibility(View.VISIBLE);
                             adapter.clear();
                             adapter.addAll(x);
@@ -367,7 +380,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                         inputEditText.setText(x.get(position) + " ");
                                         inputEditText.setSelection(inputEditText.getText().length());
                                     } else {
-                                        fieldTextView.setText(x.get(position));
+                                        //fieldTextView.setText(x.get(position));
                                         hideKeyboard(context, inputEditText);
                                         inputEditText.setVisibility(View.INVISIBLE);
                                         imageButton.setVisibility(View.INVISIBLE);
@@ -376,6 +389,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                     }
                                     listView.setVisibility(View.GONE);
                                     resultLiveData.postValue(x.get(position));
+                                    //System.out.println("**************** insert in LiveData from onTextChanged");
                                 }
                             });
                         } else {

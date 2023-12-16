@@ -110,7 +110,7 @@ public class Client implements SavingObject {
 
     @Override
     public String getDescription() {
-        return name + " " + numbers;
+        return name;
     }
 
     public void setId(Long id) {

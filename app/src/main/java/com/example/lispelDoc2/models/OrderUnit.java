@@ -19,9 +19,9 @@ public class OrderUnit implements SavingObject {
     @PrimaryKey(autoGenerate = true)
     private Long id;
     @LispelAddValueByUser(number = 1,
-            name = "название",
-            name_hint = "название",
-            name_title = "название",
+            name = "устройство",
+            name_hint = "устройство",
+            name_title = "устройство",
             base = RepositoryEnum.SAVE_IN_BASE,
             class_entity = "com.example.lispelDoc2.models.PrintUnit",
             input_type = 1)

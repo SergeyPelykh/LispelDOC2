@@ -206,8 +206,11 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                             .setMessage("такой объект уже есть в базе")
                                             .show();
                                 } else {
+                                    intentReturn.putExtra("createdEntityWithId", x.toString());
                                     intentReturn.putExtra(intent.getStringExtra("createEntity"), x.toString());
+                                    intentReturn.putExtra("classNameInsertedEntity", (intent.getStringExtra("nameEntityClass")));
                                     setResult(RESULT_OK, intentReturn);
+                                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!! return Id " + x );
                                     onBackPressed();
                                 }
                             });

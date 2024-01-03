@@ -46,6 +46,7 @@ import com.example.lispelDoc2.interfaces.SavingObject;
 import com.example.lispelDoc2.models.Client;
 import com.example.lispelDoc2.models.Field;
 import com.example.lispelDoc2.models.OrderUnit;
+import com.example.lispelDoc2.models.Sticker;
 import com.example.lispelDoc2.uiServices.FieldSetViews;
 
 import java.lang.reflect.InvocationTargetException;
@@ -60,6 +61,8 @@ public class NewOrderActivity extends AppCompatActivity {
     ArrayList<String> clientOrderUnits = new ArrayList<>();
     Client client = null;
     OrderUnit orderUnit = null;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +137,7 @@ public class NewOrderActivity extends AppCompatActivity {
         }
 
 
+
         ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
         OrderUnitDAO orderUnitDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).orderUnitDAO();
         StickerDAO stickerDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).stickerDAO();
@@ -144,20 +148,37 @@ public class NewOrderActivity extends AppCompatActivity {
                 new ArrayList<>());
         baseOptionListViews.get(1).setAdapter(adapterStickers);
 
+
+
+
         clientLiveData.observe(NewOrderActivity.this, insertedValue -> {
+            adapterStickers.clear();
             clientDAO.getEntityByName(insertedValue).observe(NewOrderActivity.this, foundedObject -> {
                 if (foundedObject != null) {
                     adapterStickers.clear();
                     client = foundedObject;
                     visionTextViews.get(0).setText(client.getName());
-                    //System.out.println("******************" + client.getDescription());
                     clientOrderUnits.clear();
                     ArrayList<String> stickers = foundedObject.getNumbers();
                     if (stickers != null && !stickers.isEmpty()) {
                         adapterStickers.addAll(stickers);
                         baseOptionListViews.get(1).setVisibility(View.VISIBLE);
                     }
-                    adapterStickers.add("добавить картридж");
+                    adapterStickers.add("добавить устройство");
+                    baseOptionListViews.get(1).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            if ( position == baseOptionListViews.get(1).getAdapter().getCount() - 1){
+                                //System.out.println("!!!!!!!!!!!!добавить картридж");
+
+                                Intent intent = new Intent(NewOrderActivity.this, CreateNewEntityDialogActivity.class);
+                                    intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.OrderUnit");
+                                    intent.putExtra("repositoryTitle", "OrderUnit");
+                                startForResult.launch(intent);
+
+                            }
+                        }
+                    });
 
                 }
             });
@@ -514,6 +535,53 @@ public class NewOrderActivity extends AppCompatActivity {
         }
         return null;
     }
+
+    ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        System.out.println("***************************************************");
+                        if (result.getData().getStringExtra("classNameInsertedEntity").equals("com.example.lispelDoc2.models.Sticker")) {
+                            if (client != null) {
+                                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                                StickerDAO stickerDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).stickerDAO();
+                                LiveData<Sticker> liveData = stickerDAO.getEntityById(Long.parseLong(result.getData().getStringExtra("createdEntityWithId")));
+                                       liveData.observe(NewOrderActivity.this, x -> {
+                                            System.out.println("client had stickers " + client.getNumbers());
+                                            client.addNumber(x.getNumber());
+                                            System.out.println("client have stickers now " + client.getNumbers());
+                                            ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
+                                            LispelRoomDatabase.databaseWriteExecutor.execute(() -> {
+                                                clientDAO.updateEntity(client);
+                                            });
+                                            liveData.removeObservers(NewOrderActivity.this);
+
+                                        });
+                            }
+                        }
+                        if (result.getData().getStringExtra("classNameInsertedEntity").equals("com.example.lispelDoc2.models.OrderUnit")) {
+                            if (client != null) {
+                                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                                OrderUnitDAO orderUnitDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).orderUnitDAO();
+                                LiveData<OrderUnit> liveData = orderUnitDAO.getEntityById(Long.parseLong(result.getData().getStringExtra("createdEntityWithId")));
+                                liveData.observe(NewOrderActivity.this, x -> {
+                                    System.out.println("client had stickers " + client.getNumbers());
+                                    client.addNumber(x.getStickerNumber());
+                                    System.out.println("client have stickers now " + client.getNumbers());
+                                    ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
+                                    LispelRoomDatabase.databaseWriteExecutor.execute(() -> {
+                                        clientDAO.updateEntity(client);
+                                    });
+                                    liveData.removeObservers(NewOrderActivity.this);
+
+                                });
+                            }
+                        }
+                    }
+                }
+            });
 
 
     private void showKeyboard(Context context, EditText input) {

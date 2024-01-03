@@ -72,13 +72,13 @@ public class Client implements SavingObject {
             repository_title = "clientType")
     private String type;
     @TypeConverters({Convert.class})
-    @LispelAddValueByUser(number = 6,
-            name = "номер стикера",
-            name_hint = "номер стикера",
-            name_title = "номер стикера",
-            base = RepositoryEnum.SAVE_IN_BASE_AND_NOT_TO_DISPLAY,
-            class_entity = "com.example.lispelDoc2.models.Sticker",
-            input_type = 1)
+//    @LispelAddValueByUser(number = 6,
+//            name = "номер стикера",
+//            name_hint = "номер стикера",
+//            name_title = "номер стикера",
+//            base = RepositoryEnum.SAVE_IN_BASE,
+//            class_entity = "com.example.lispelDoc2.models.Sticker",
+//            input_type = 1)
     private ArrayList<String> numbers;
 
     public Client() {
@@ -91,7 +91,7 @@ public class Client implements SavingObject {
         this.address = arr.get(2);
         this.phone = arr.get(3);
         this.type = arr.get(4);
-        addNumber(arr.get(5));
+        //addNumber(arr.get(5));
     }
 
     public SavingObject createEntityFromList(ArrayList<String> arr) {

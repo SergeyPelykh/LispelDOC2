@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/main_title_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_light"
+        android:textAllCaps="false"
+        android:textColor="#3C2929"
+        android:textSize="24sp"
+        android:text="заправить"/>
+
+    <TextView
+        android:id="@+id/title_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_light"
+        android:textAllCaps="false"
+        android:textColor="#3C2929"
+        android:textSize="24sp" />
+    <TextView
+        android:id="@+id/toner_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_light"
+        android:textAllCaps="false"
+        android:textColor="#3C2929"
+        android:textSize="24sp"
+        android:text="тонер"/>
+    <ListView
+        android:id="@+id/toner_listView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:fadeScrollbars="false"
+        android:textColor="#706565"
+        android:textSize="24dp" />
+
+    <TextView
+        android:id="@+id/toner_wight_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_light"
+        android:textAllCaps="false"
+        android:textColor="#3C2929"
+        android:textSize="24sp"
+        android:text="количество"/>
+
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/cleaning_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@drawable/rounded_corner_btn"
+        android:fontFamily="@font/roboto_light"
+        android:text="готово"
+        android:textAllCaps="false"
+        android:textColor="#3C2929"
+        android:textSize="24sp" />
+
+
+</LinearLayout>

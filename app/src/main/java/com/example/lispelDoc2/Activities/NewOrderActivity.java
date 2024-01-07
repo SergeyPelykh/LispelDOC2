@@ -15,8 +15,11 @@ import androidx.lifecycle.MutableLiveData;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
@@ -46,11 +49,13 @@ import com.example.lispelDoc2.interfaces.SavingObject;
 import com.example.lispelDoc2.models.Client;
 import com.example.lispelDoc2.models.Field;
 import com.example.lispelDoc2.models.OrderUnit;
+import com.example.lispelDoc2.models.PrintUnit;
 import com.example.lispelDoc2.models.Sticker;
 import com.example.lispelDoc2.uiServices.FieldSetViews;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NewOrderActivity extends AppCompatActivity {
@@ -169,13 +174,70 @@ public class NewOrderActivity extends AppCompatActivity {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             if ( position == baseOptionListViews.get(1).getAdapter().getCount() - 1){
-                                //System.out.println("!!!!!!!!!!!!добавить картридж");
-
                                 Intent intent = new Intent(NewOrderActivity.this, CreateNewEntityDialogActivity.class);
                                     intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.OrderUnit");
                                     intent.putExtra("repositoryTitle", "OrderUnit");
+                                    intent.putExtra("владелец", client.getName());
                                 startForResult.launch(intent);
 
+                            }else {
+                                Dialog dialog = new Dialog(NewOrderActivity.this);
+                                dialog.setContentView(R.layout.stickers_item_dialog);
+                                dialog.show();
+                                TextView textView = (TextView) dialog.findViewById(R.id.title_textview);
+                                textView.setText(stickers.get(position));
+                                AppCompatButton recyclingButton = (AppCompatButton) dialog.findViewById(R.id.recycling_button);
+                                recyclingButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.cancel();
+                                        Dialog dialogRecycling = new Dialog(NewOrderActivity.this);
+                                        dialogRecycling.setContentView(R.layout.recycling_dialog);
+                                        dialogRecycling.show();
+                                        ListView tonerListView = (ListView)dialogRecycling.findViewById(R.id.toner_listView);
+                                        ArrayAdapter<String> adapter = new ArrayAdapter<>(NewOrderActivity.this,
+                                                android.R.layout.simple_list_item_1,
+                                                new ArrayList<>());
+                                        tonerListView.setAdapter(adapter);
+                                        ArrayList<String> arrayList = new ArrayList<>(Arrays.asList("toner1", "toner1", "toner1", "toner1", "toner1", "toner1", "toner1"));
+                                        adapter.addAll(arrayList);
+                                        TextView stickerNumberTextView = (TextView) dialogRecycling.findViewById(R.id.title_textview);
+                                        stickerNumberTextView.setText(stickers.get(position));
+                                    }
+                                });
+
+//                                new AlertDialog.Builder(NewOrderActivity.this)
+//                                        .setTitle(stickers.get(position))
+//                                        .setPositiveButton("заправить", new DialogInterface.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which) {
+//                                                dialog.cancel();
+//                                            }
+//                                        })
+//                                        .setNeutralButton("восстановить", new DialogInterface.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which) {
+//                                                dialog.cancel();
+//                                            }
+//                                        })
+//                                        .setNeutralButton("восстановить", new DialogInterface.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which) {
+//                                                dialog.cancel();
+//                                            }
+//                                        })
+//                                        .setNegativeButton("почистить", new DialogInterface.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which) {
+//                                                dialog.cancel();
+//                                            }
+//                                        })
+//                                        .show();
+//                                Intent intent = new Intent(NewOrderActivity.this, CreateNewEntityDialogActivity.class);
+//                                intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.Service");
+//                                intent.putExtra("repositoryTitle", "Service");
+//                                intent.putExtra("printUnit", stickers.get(position));
+//                                startForResult.launch(intent);
                             }
                         }
                     });

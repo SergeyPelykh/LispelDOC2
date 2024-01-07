@@ -311,100 +311,110 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
         titleTextView.setText(field.getInscription());
         inputEditText.setInputType(field.getInputType());
 
+        titleTextView.setVisibility(View.VISIBLE);
+
         Repository repository = field.getDataSource();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(CreateNewEntityDialogActivity.this,
                 android.R.layout.simple_list_item_1,
                 new ArrayList<>());
 
-        fieldTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (FieldSetViews f : allFieldsOnLayout) {
-                    if (f != fieldSetViews) {
-                        f.removeFocus(CreateNewEntityDialogActivity.this);
-                    }
-                }
-                inputEditText.setText(fieldTextView.getText());
-                fieldTextView.setVisibility(View.INVISIBLE);
-                titleTextView.setVisibility(View.GONE);
-                inputEditText.setVisibility(View.VISIBLE);
-                inputEditText.setSelection(inputEditText.getText().length());
+        if (getIntent().getStringExtra(field.getName()) != null) {
+            fieldTextView.setText(getIntent().getStringExtra(field.getName()));
 
-                if (field.getName().equals("номер стикера") && field.isHasTemplateValue()) {
-                    LispelRoomDatabase lispelRoomDatabase = LispelRoomDatabase.getDatabase(CreateNewEntityDialogActivity.this);
-                    StickerDAO stickerDAO = lispelRoomDatabase.stickerDAO();
-                    stickerDAO.getLastEntity().observe(CreateNewEntityDialogActivity.this, lastEntity -> {
-                        if (lastEntity != null) {
-                            inputEditText.setText(lastEntity.getNumber().substring(2));
-                            inputEditText.setSelection(inputEditText.getText().length());
+        } else {
+
+
+
+            fieldTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (FieldSetViews f : allFieldsOnLayout) {
+                        if (f != fieldSetViews) {
+                            f.removeFocus(CreateNewEntityDialogActivity.this);
+                        }
+                    }
+                    inputEditText.setText(fieldTextView.getText());
+                    fieldTextView.setVisibility(View.INVISIBLE);
+                    titleTextView.setVisibility(View.GONE);
+                    inputEditText.setVisibility(View.VISIBLE);
+                    inputEditText.setSelection(inputEditText.getText().length());
+
+                    if (field.getName().equals("номер стикера") && field.isHasTemplateValue()) {
+                        LispelRoomDatabase lispelRoomDatabase = LispelRoomDatabase.getDatabase(CreateNewEntityDialogActivity.this);
+                        StickerDAO stickerDAO = lispelRoomDatabase.stickerDAO();
+                        stickerDAO.getLastEntity().observe(CreateNewEntityDialogActivity.this, lastEntity -> {
+                            if (lastEntity != null) {
+                                inputEditText.setText(lastEntity.getNumber().substring(2));
+                                inputEditText.setSelection(inputEditText.getText().length());
+                            }
+                        });
+                    }
+
+                    listView.setAdapter(adapter);
+
+                    if (repository != null) {
+                        LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this,
+                                fieldTextView.getText().toString());
+                        allEntity.observe(CreateNewEntityDialogActivity.this, x -> {
+                                    allEntity.removeObservers(CreateNewEntityDialogActivity.this);
+                                    if (x.size() != 0) {
+                                        adapter.clear();
+                                        adapter.addAll(x);
+                                        if (field.isDisplayOptionsWhenCreate()) {
+                                            listView.setVisibility(View.VISIBLE);
+                                        }
+                                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                if (field.isFromBaseAndEdit()) {
+                                                    inputEditText.setText(x.get(position) + " ");
+                                                    inputEditText.setSelection(inputEditText.getText().length());
+                                                } else {
+                                                    fieldTextView.setText(x.get(position));
+                                                    hideKeyboard(context, inputEditText);
+                                                    inputEditText.setVisibility(View.INVISIBLE);
+                                                    imageButton.setVisibility(View.INVISIBLE);
+                                                    titleTextView.setVisibility(View.VISIBLE);
+                                                    fieldTextView.setVisibility(View.VISIBLE);
+                                                }
+                                                listView.setVisibility(View.GONE);
+                                            }
+                                        });
+                                    }
+                                }
+                        );
+                        if (field.isWriteInBase()) {
+                            imageButton.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+
+                    showKeyboard(context, inputEditText);
+                    inputEditText.setOnKeyListener(new View.OnKeyListener() {
+                        @Override
+                        public boolean onKey(View v, int keyCode, KeyEvent event) {
+                            if (event.getAction() == KeyEvent.ACTION_DOWN &&
+                                    keyCode == KeyEvent.KEYCODE_ENTER) {
+                                if (repository == null) {
+                                    fieldTextView.setText(inputEditText.getText());
+                                }
+                                if (field.isFromBaseAndEdit()) {
+                                    fieldTextView.setText(inputEditText.getText());
+                                }
+                                imageButton.setVisibility(View.INVISIBLE);
+                                inputEditText.setVisibility(View.INVISIBLE);
+                                listView.setVisibility(View.GONE);
+                                fieldTextView.setVisibility(View.VISIBLE);
+                                titleTextView.setVisibility(View.VISIBLE);
+                                hideKeyboard(context, inputEditText);
+                                return true;
+                            }
+                            return false;
                         }
                     });
                 }
-
-                listView.setAdapter(adapter);
-
-                if (repository != null) {
-                    LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this,
-                            fieldTextView.getText().toString());
-                    allEntity.observe(CreateNewEntityDialogActivity.this, x -> {
-                                allEntity.removeObservers(CreateNewEntityDialogActivity.this);
-                                if (x.size() != 0) {
-                                    adapter.clear();
-                                    adapter.addAll(x);
-                                    if (field.isDisplayOptionsWhenCreate()){
-                                        listView.setVisibility(View.VISIBLE);
-                                    }
-                                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                        @Override
-                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                            if (field.isFromBaseAndEdit()) {
-                                                inputEditText.setText(x.get(position) + " ");
-                                                inputEditText.setSelection(inputEditText.getText().length());
-                                            } else {
-                                                fieldTextView.setText(x.get(position));
-                                                hideKeyboard(context, inputEditText);
-                                                inputEditText.setVisibility(View.INVISIBLE);
-                                                imageButton.setVisibility(View.INVISIBLE);
-                                                titleTextView.setVisibility(View.VISIBLE);
-                                                fieldTextView.setVisibility(View.VISIBLE);
-                                            }
-                                            listView.setVisibility(View.GONE);
-                                        }
-                                    });
-                                }
-                            }
-                    );
-                    if (field.isWriteInBase()) {
-                        imageButton.setVisibility(View.VISIBLE);
-                    }
-                }
-
-
-                showKeyboard(context, inputEditText);
-                inputEditText.setOnKeyListener(new View.OnKeyListener() {
-                    @Override
-                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-                        if (event.getAction() == KeyEvent.ACTION_DOWN &&
-                                keyCode == KeyEvent.KEYCODE_ENTER) {
-                            if (repository == null) {
-                                fieldTextView.setText(inputEditText.getText());
-                            }
-                            if (field.isFromBaseAndEdit()) {
-                                fieldTextView.setText(inputEditText.getText());
-                            }
-                            imageButton.setVisibility(View.INVISIBLE);
-                            inputEditText.setVisibility(View.INVISIBLE);
-                            listView.setVisibility(View.GONE);
-                            fieldTextView.setVisibility(View.VISIBLE);
-                            titleTextView.setVisibility(View.VISIBLE);
-                            hideKeyboard(context, inputEditText);
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-            }
-        });
+            });
+        }
 
         ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),

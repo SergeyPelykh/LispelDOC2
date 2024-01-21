@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.lifecycle.LifecycleOwner;
@@ -22,6 +23,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,13 +35,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lispelDoc2.R;
 import com.example.lispelDoc2.dao.ClientDAO;
+import com.example.lispelDoc2.dao.ComponentDAO;
 import com.example.lispelDoc2.dao.OrderUnitDAO;
+import com.example.lispelDoc2.dao.PrintUnitDAO;
 import com.example.lispelDoc2.dao.StickerDAO;
 import com.example.lispelDoc2.database.LispelRoomDatabase;
 import com.example.lispelDoc2.interfaces.LispelCreateRepository;
@@ -47,26 +52,31 @@ import com.example.lispelDoc2.interfaces.LispelDAO;
 import com.example.lispelDoc2.interfaces.Repository;
 import com.example.lispelDoc2.interfaces.SavingObject;
 import com.example.lispelDoc2.models.Client;
+import com.example.lispelDoc2.models.Component;
 import com.example.lispelDoc2.models.Field;
 import com.example.lispelDoc2.models.OrderUnit;
 import com.example.lispelDoc2.models.PrintUnit;
+import com.example.lispelDoc2.models.Service;
 import com.example.lispelDoc2.models.Sticker;
 import com.example.lispelDoc2.uiServices.FieldSetViews;
+import com.example.lispelDoc2.uiServices.ServicesListViewAdapter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NewOrderActivity extends AppCompatActivity {
 
     ArrayList<FieldSetViews> allFieldsOnLayout = new ArrayList<>();
     MutableLiveData<String> clientLiveData = new MutableLiveData<>();
     MutableLiveData<String> orderUnitLiveData = new MutableLiveData<>();
+    MutableLiveData<List<Service>> orderServicesLiveData = new MutableLiveData<>();
     ArrayList<String> clientOrderUnits = new ArrayList<>();
     Client client = null;
     OrderUnit orderUnit = null;
-
 
 
     @Override
@@ -142,18 +152,22 @@ public class NewOrderActivity extends AppCompatActivity {
         }
 
 
-
         ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
         OrderUnitDAO orderUnitDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).orderUnitDAO();
         StickerDAO stickerDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).stickerDAO();
+
+
+//        int weightOfToner = 0;
+        MutableLiveData<String> weightOfTonerLiveData = new MutableLiveData<>();
+//        weightOfTonerLiveData.observe(NewOrderActivity.this, value -> {
+//            weightOfToner = Integer.parseInt(value);
+//        });
 
 
         ArrayAdapter<String> adapterStickers = new ArrayAdapter<>(NewOrderActivity.this,
                 android.R.layout.simple_list_item_1,
                 new ArrayList<>());
         baseOptionListViews.get(1).setAdapter(adapterStickers);
-
-
 
 
         clientLiveData.observe(NewOrderActivity.this, insertedValue -> {
@@ -171,80 +185,156 @@ public class NewOrderActivity extends AppCompatActivity {
                     }
                     adapterStickers.add("добавить устройство");
                     baseOptionListViews.get(1).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.N)
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            if ( position == baseOptionListViews.get(1).getAdapter().getCount() - 1){
+                            if (position == baseOptionListViews.get(1).getAdapter().getCount() - 1) {
                                 Intent intent = new Intent(NewOrderActivity.this, CreateNewEntityDialogActivity.class);
-                                    intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.OrderUnit");
-                                    intent.putExtra("repositoryTitle", "OrderUnit");
-                                    intent.putExtra("владелец", client.getName());
+                                intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.OrderUnit");
+                                intent.putExtra("repositoryTitle", "OrderUnit");
+                                intent.putExtra("владелец", client.getName());
                                 startForResult.launch(intent);
+                            } else {
+                                Dialog selectServicesDialog = new Dialog(NewOrderActivity.this);
+                                selectServicesDialog.setContentView(R.layout.stickers_item_dialog);
+                                selectServicesDialog.show();
+                                TextView printUnitNameTextView = (TextView) selectServicesDialog.findViewById(R.id.title_textview);
+                                ListView services = (ListView) selectServicesDialog.findViewById(R.id.services_listView);
+                                ServicesListViewAdapter servicesListViewAdapter = new ServicesListViewAdapter(NewOrderActivity.this, new ArrayList<>());
+                                services.setAdapter(servicesListViewAdapter);
 
-                            }else {
-                                Dialog dialog = new Dialog(NewOrderActivity.this);
-                                dialog.setContentView(R.layout.stickers_item_dialog);
-                                dialog.show();
-                                TextView textView = (TextView) dialog.findViewById(R.id.title_textview);
-                                textView.setText(stickers.get(position));
-                                AppCompatButton recyclingButton = (AppCompatButton) dialog.findViewById(R.id.recycling_button);
-                                recyclingButton.setOnClickListener(new View.OnClickListener() {
+                                orderServicesLiveData.observe(NewOrderActivity.this, gotArrayServices -> {
+                                    if (!gotArrayServices.isEmpty()) {
+                                        List<String> servicesList = gotArrayServices.stream().map(service -> {
+                                            String result = service.getName() + " " + service.getComponentName();
+                                            if (service.getName().contains("Заправка")) {
+                                                result = result + " " + service.getAmount() + " гр";
+                                            }
+                                            return result;
+                                        }).collect(Collectors.toList());
+                                        servicesListViewAdapter.clear();
+                                        servicesListViewAdapter.addAll(servicesList);
+
+
+//                                        printUnitNameTextView.setText("");
+//                                        List<String> services = gotArrayServices.stream().map(service -> {
+//                                            String result = service.getName() + " " + service.getComponentName();
+//                                            if (service.getName().contains("Заправка")) {
+//                                                result = result + " " + service.getAmount() + " гр";
+//                                            }
+//                                            return result;
+//                                        }).collect(Collectors.toList());
+//                                        for (String s : services) {
+//                                            if (!printUnitNameTextView.getText().equals("")) {
+//                                                printUnitNameTextView.setText(printUnitNameTextView.getText() + "\n" + s);
+//                                            } else {
+//                                                printUnitNameTextView.setText(s);
+//                                            }
+//
+//                                        }
+                                    }
+                                });
+                                //PrintUnitNameTextView.setText(stickers.get(position));
+                                AppCompatButton recyclingOrRecoveringButton = (AppCompatButton) selectServicesDialog.findViewById(R.id.recycling_button);
+                                recyclingOrRecoveringButton.setOnClickListener(new View.OnClickListener() {
+                                    @RequiresApi(api = Build.VERSION_CODES.N)
                                     @Override
                                     public void onClick(View v) {
-                                        dialog.cancel();
-                                        Dialog dialogRecycling = new Dialog(NewOrderActivity.this);
-                                        dialogRecycling.setContentView(R.layout.recycling_dialog);
-                                        dialogRecycling.show();
-                                        ListView tonerListView = (ListView)dialogRecycling.findViewById(R.id.toner_listView);
+                                        Dialog recyclingRecoveringDialog = new Dialog(NewOrderActivity.this);
+                                        recyclingRecoveringDialog.setContentView(R.layout.recycling_dialog);
+                                        recyclingRecoveringDialog.show();
+                                        ListView componentsForServicesListView = (ListView) recyclingRecoveringDialog.findViewById(R.id.toner_listView);
                                         ArrayAdapter<String> adapter = new ArrayAdapter<>(NewOrderActivity.this,
                                                 android.R.layout.simple_list_item_1,
                                                 new ArrayList<>());
-                                        tonerListView.setAdapter(adapter);
-                                        ArrayList<String> arrayList = new ArrayList<>(Arrays.asList("toner1", "toner1", "toner1", "toner1", "toner1", "toner1", "toner1"));
-                                        adapter.addAll(arrayList);
-                                        TextView stickerNumberTextView = (TextView) dialogRecycling.findViewById(R.id.title_textview);
+                                        componentsForServicesListView.setAdapter(adapter);
+                                        ComponentDAO componentDAO = LispelRoomDatabase.getDatabase(NewOrderActivity.this).componentDAO();
+                                        LiveData<List<Component>> listOfComponents = componentDAO.getEntityByCompatibility(stickers.get(position));
+                                        listOfComponents.observe(NewOrderActivity.this, gotComponent -> {
+                                            adapter.clear();
+                                            if (gotComponent != null) {
+                                                List<String> nameComponents = gotComponent.stream().map(component -> component.getComponentName() + " " + component.getAliasName()).collect(Collectors.toList());
+                                                adapter.addAll(nameComponents);
+                                            }
+                                            adapter.add("добавить");
+                                            componentsForServicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                @Override
+                                                public void onItemClick(AdapterView<?> parent, View view, int positionInner, long id) {
+                                                    //selectServicesDialog.hide();
+                                                    if (positionInner == adapter.getCount() - 1) {
+                                                        Intent intent = new Intent(NewOrderActivity.this, CreateNewEntityDialogActivity.class);
+                                                        intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.Component");
+                                                        intent.putExtra("repositoryTitle", "Components");
+                                                        //intent.putExtra("название компонента", "тонер");
+                                                        startForResult.launch(intent);
+                                                    } else {
+
+                                                        List<Service> services = orderServicesLiveData.getValue();
+                                                        if (services == null) {
+                                                            services = new ArrayList<>();
+                                                        }
+
+                                                        Service service = new Service();
+                                                        service.setDateOfCreate(new Date());
+                                                        service.setOrderUnitSticker(stickers.get(position));
+                                                        service.setComponentName(adapter.getItem(positionInner));
+                                                        service.setName("Восстановление");
+                                                        service.setAmount(1);
+
+                                                        if (adapter.getItem(positionInner).contains("тонер")) {
+                                                            Dialog tonerWeightDialog = new Dialog(NewOrderActivity.this);
+                                                            tonerWeightDialog.setContentView(R.layout.weigth_toner_dialog);
+                                                            EditText weightTonerEditText = tonerWeightDialog.findViewById(R.id.weight_toner_edittext);
+                                                            weightTonerEditText.requestFocus();
+                                                            tonerWeightDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                                                            AppCompatButton insertWeightOfToner = tonerWeightDialog.findViewById(R.id.weight_toner_button);
+                                                            Service recycling = new Service();
+                                                            recycling.setDateOfCreate(new Date());
+                                                            recycling.setOrderUnitSticker(stickers.get(position));
+                                                            recycling.setComponentName(adapter.getItem(positionInner));
+                                                            insertWeightOfToner.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+                                                                    if (weightTonerEditText.getText() != null) {
+                                                                        weightOfTonerLiveData.postValue(weightTonerEditText.getText().toString());
+                                                                        recycling.setName("Заправка");
+                                                                        recycling.setAmount(Integer.parseInt(weightTonerEditText.getText().toString()));
+
+                                                                        List<Service> services = orderServicesLiveData.getValue();
+                                                                        if (services == null) {
+                                                                            services = new ArrayList<>();
+                                                                        } else {
+                                                                            services = services.stream().filter(service1 -> !service1.getName().contains("Заправка")).collect(Collectors.toList());
+                                                                        }
+                                                                        services.add(recycling);
+                                                                        orderServicesLiveData.postValue(services);
+                                                                        recyclingRecoveringDialog.cancel();
+                                                                    }
+                                                                    tonerWeightDialog.cancel();
+                                                                    recyclingRecoveringDialog.cancel();
+                                                                }
+                                                            });
+                                                            tonerWeightDialog.show();
+                                                        } else {
+                                                            services.add(service);
+                                                            orderServicesLiveData.postValue(services);
+                                                            recyclingRecoveringDialog.cancel();
+                                                        }
+
+                                                    }
+                                                }
+                                            });
+                                            listOfComponents.removeObservers(NewOrderActivity.this);
+                                        });
+                                        TextView stickerNumberTextView = (TextView) recyclingRecoveringDialog.findViewById(R.id.title_textview);
                                         stickerNumberTextView.setText(stickers.get(position));
                                     }
                                 });
-
-//                                new AlertDialog.Builder(NewOrderActivity.this)
-//                                        .setTitle(stickers.get(position))
-//                                        .setPositiveButton("заправить", new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialog, int which) {
-//                                                dialog.cancel();
-//                                            }
-//                                        })
-//                                        .setNeutralButton("восстановить", new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialog, int which) {
-//                                                dialog.cancel();
-//                                            }
-//                                        })
-//                                        .setNeutralButton("восстановить", new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialog, int which) {
-//                                                dialog.cancel();
-//                                            }
-//                                        })
-//                                        .setNegativeButton("почистить", new DialogInterface.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(DialogInterface dialog, int which) {
-//                                                dialog.cancel();
-//                                            }
-//                                        })
-//                                        .show();
-//                                Intent intent = new Intent(NewOrderActivity.this, CreateNewEntityDialogActivity.class);
-//                                intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.Service");
-//                                intent.putExtra("repositoryTitle", "Service");
-//                                intent.putExtra("printUnit", stickers.get(position));
-//                                startForResult.launch(intent);
                             }
                         }
                     });
-
                 }
             });
-
         });
 
 
@@ -610,17 +700,17 @@ public class NewOrderActivity extends AppCompatActivity {
                                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                                 StickerDAO stickerDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).stickerDAO();
                                 LiveData<Sticker> liveData = stickerDAO.getEntityById(Long.parseLong(result.getData().getStringExtra("createdEntityWithId")));
-                                       liveData.observe(NewOrderActivity.this, x -> {
-                                            System.out.println("client had stickers " + client.getNumbers());
-                                            client.addNumber(x.getNumber());
-                                            System.out.println("client have stickers now " + client.getNumbers());
-                                            ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
-                                            LispelRoomDatabase.databaseWriteExecutor.execute(() -> {
-                                                clientDAO.updateEntity(client);
-                                            });
-                                            liveData.removeObservers(NewOrderActivity.this);
+                                liveData.observe(NewOrderActivity.this, x -> {
+                                    System.out.println("client had stickers " + client.getNumbers());
+                                    client.addNumber(x.getNumber());
+                                    System.out.println("client have stickers now " + client.getNumbers());
+                                    ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
+                                    LispelRoomDatabase.databaseWriteExecutor.execute(() -> {
+                                        clientDAO.updateEntity(client);
+                                    });
+                                    liveData.removeObservers(NewOrderActivity.this);
 
-                                        });
+                                });
                             }
                         }
                         if (result.getData().getStringExtra("classNameInsertedEntity").equals("com.example.lispelDoc2.models.OrderUnit")) {

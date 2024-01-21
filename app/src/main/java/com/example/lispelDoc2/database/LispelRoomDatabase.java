@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
         Sticker.class,
         OrderUnit.class,
         Service.class},
-        version = 3, exportSchema = false)
+        version = 4, exportSchema = false)
 @TypeConverters({Convert.class})
 public abstract class LispelRoomDatabase extends RoomDatabase {
     public abstract PrintUnitDAO printUnitDAO();

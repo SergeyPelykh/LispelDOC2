@@ -172,6 +172,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                     for (int i = 1; i <= mapFields.size(); i++) {
                         if (mapFields.get(i).getResultId().equals("")) {
                             dataForCreateEntity.add(visionTextViews.get(i - 1).getText().toString());
+                            //System.out.println(visionTextViews.get(i - 1).getText().toString());
                         } else {
                             dataForCreateEntity.add(mapFields.get(i).getResultId());
                         }

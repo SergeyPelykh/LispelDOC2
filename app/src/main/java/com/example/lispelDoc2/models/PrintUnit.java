@@ -69,7 +69,7 @@ public class PrintUnit implements SavingObject{
 
     @Override
     public String getDescription() {
-        return vendor + "|" + model;
+        return model;
     }
 
 

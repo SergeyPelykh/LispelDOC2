@@ -6,6 +6,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.example.lispelDoc2.models.Component;
+import com.example.lispelDoc2.models.PrintUnit;
 
 import java.util.List;
 
@@ -34,4 +35,8 @@ public interface ComponentDAO {
 
     @Query("SELECT * FROM component_table WHERE id = :id")
     LiveData<Component> getEntityById(Long id);
+
+    @Query(" SELECT * FROM component_table WHERE compatibility IN (SELECT model FROM printUnit_table WHERE model IN (SELECT printUnitName FROM orderUnit_table WHERE stickerNumber = :stickerNumber ))")
+    //@Query(" SELECT * FROM component_table WHERE compatibility = :stickerNumber ")
+    LiveData<List<Component>> getEntityByCompatibility(String stickerNumber);
 }

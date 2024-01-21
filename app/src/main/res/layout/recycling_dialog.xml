@@ -43,15 +43,15 @@
         android:textColor="#706565"
         android:textSize="24dp" />
 
-    <TextView
-        android:id="@+id/toner_wight_textview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_light"
-        android:textAllCaps="false"
-        android:textColor="#3C2929"
-        android:textSize="24sp"
-        android:text="количество"/>
+<!--    <TextView-->
+<!--        android:id="@+id/toner_wight_textview"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:fontFamily="@font/roboto_light"-->
+<!--        android:textAllCaps="false"-->
+<!--        android:textColor="#3C2929"-->
+<!--        android:textSize="24sp"-->
+<!--        android:text="количество"/>-->
 
 
 

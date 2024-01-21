@@ -16,7 +16,7 @@ import java.util.ArrayList;
         dao = ComponentProxyDAO.class,
         entity = com.example.lispelDoc2.models.Component.class)
 @Entity(tableName = "component_table",
-        indices = {@Index(value = {"aliasName"}, unique = true)})
+        indices = {@Index(value = {"aliasName", "componentName"}, unique = true)})
 public class Component implements SavingObject {
     @PrimaryKey(autoGenerate = true)
     private Long id;
@@ -69,6 +69,7 @@ public class Component implements SavingObject {
             name = "совместимые модели",
             name_hint = "совместимые модели",
             name_title = "совместимые модели",
+            class_entity = "com.example.lispelDoc2.models.PrintUnit",
             input_type = 1)
     private String compatibility;
 
@@ -85,7 +86,6 @@ public class Component implements SavingObject {
 
     @Override
     public void setTitle(String title) {
-        this.componentName = title;
     }
 
 
@@ -95,6 +95,10 @@ public class Component implements SavingObject {
     public Component(ArrayList<String> arr){
         this.componentName = arr.get(0);
         this.aliasName = arr.get(1);
+        this.fullName = arr.get(2);
+        this.vendor = arr.get(3);
+        this.provider = arr.get(4);
+        this.compatibility = arr.get(5);
     }
 
     public void setId(Long id) {

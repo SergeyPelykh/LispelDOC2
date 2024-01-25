@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -23,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -199,9 +201,15 @@ public class NewOrderActivity extends AppCompatActivity {
                                 selectServicesDialog.setContentView(R.layout.stickers_item_dialog);
                                 selectServicesDialog.show();
                                 TextView printUnitNameTextView = (TextView) selectServicesDialog.findViewById(R.id.title_textview);
+                                printUnitNameTextView.setText(stickers.get(position));
                                 ListView services = (ListView) selectServicesDialog.findViewById(R.id.services_listView);
                                 ServicesListViewAdapter servicesListViewAdapter = new ServicesListViewAdapter(NewOrderActivity.this, new ArrayList<>());
+                                servicesListViewAdapter.innerUpdateDataList(orderServicesLiveData);
                                 services.setAdapter(servicesListViewAdapter);
+
+                                if (servicesListViewAdapter.isEmpty()){
+                                    services.setVisibility(View.GONE);
+                                }
 
                                 orderServicesLiveData.observe(NewOrderActivity.this, gotArrayServices -> {
                                     if (!gotArrayServices.isEmpty()) {
@@ -214,27 +222,11 @@ public class NewOrderActivity extends AppCompatActivity {
                                         }).collect(Collectors.toList());
                                         servicesListViewAdapter.clear();
                                         servicesListViewAdapter.addAll(servicesList);
-
-
-//                                        printUnitNameTextView.setText("");
-//                                        List<String> services = gotArrayServices.stream().map(service -> {
-//                                            String result = service.getName() + " " + service.getComponentName();
-//                                            if (service.getName().contains("Заправка")) {
-//                                                result = result + " " + service.getAmount() + " гр";
-//                                            }
-//                                            return result;
-//                                        }).collect(Collectors.toList());
-//                                        for (String s : services) {
-//                                            if (!printUnitNameTextView.getText().equals("")) {
-//                                                printUnitNameTextView.setText(printUnitNameTextView.getText() + "\n" + s);
-//                                            } else {
-//                                                printUnitNameTextView.setText(s);
-//                                            }
-//
-//                                        }
+                                        services.setVisibility(View.VISIBLE);
+                                    } else {
+                                        services.setVisibility(View.GONE);
                                     }
                                 });
-                                //PrintUnitNameTextView.setText(stickers.get(position));
                                 AppCompatButton recyclingOrRecoveringButton = (AppCompatButton) selectServicesDialog.findViewById(R.id.recycling_button);
                                 recyclingOrRecoveringButton.setOnClickListener(new View.OnClickListener() {
                                     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -265,7 +257,6 @@ public class NewOrderActivity extends AppCompatActivity {
                                                         Intent intent = new Intent(NewOrderActivity.this, CreateNewEntityDialogActivity.class);
                                                         intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.Component");
                                                         intent.putExtra("repositoryTitle", "Components");
-                                                        //intent.putExtra("название компонента", "тонер");
                                                         startForResult.launch(intent);
                                                     } else {
 

@@ -49,6 +49,17 @@
         android:textAllCaps="false"
         android:textColor="#3C2929"
         android:textSize="24sp" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/submit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@drawable/rounded_corner_btn"
+        android:fontFamily="@font/roboto_light"
+        android:text="сохранить"
+        android:textAllCaps="false"
+        android:textColor="#3C2929"
+        android:textSize="24sp" />
 
 
 </LinearLayout>

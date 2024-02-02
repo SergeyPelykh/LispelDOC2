@@ -210,23 +210,36 @@ public class NewOrderActivity extends AppCompatActivity {
                                 if (servicesListViewAdapter.isEmpty()){
                                     services.setVisibility(View.GONE);
                                 }
+                                AppCompatButton submitButton = (AppCompatButton) selectServicesDialog.findViewById(R.id.submit_button);
+                                submitButton.setVisibility(View.GONE);
+                                submitButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+
+                                    }
+                                });
 
                                 orderServicesLiveData.observe(NewOrderActivity.this, gotArrayServices -> {
                                     if (!gotArrayServices.isEmpty()) {
-                                        List<String> servicesList = gotArrayServices.stream().map(service -> {
-                                            String result = service.getName() + " " + service.getComponentName();
-                                            if (service.getName().contains("Заправка")) {
-                                                result = result + " " + service.getAmount() + " гр";
-                                            }
-                                            return result;
-                                        }).collect(Collectors.toList());
+//                                        List<String> servicesList = gotArrayServices.stream().map(service -> {
+//                                            String result = service.getName() + " " + service.getComponentName();
+//                                            if (service.getName().contains("Заправка")) {
+//                                                result = result + " " + service.getAmount() + " гр";
+//                                            }
+//                                            return result;
+//                                        }).collect(Collectors.toList());
                                         servicesListViewAdapter.clear();
-                                        servicesListViewAdapter.addAll(servicesList);
+                                        servicesListViewAdapter.addAll(gotArrayServices);
                                         services.setVisibility(View.VISIBLE);
+                                        submitButton.setVisibility(View.VISIBLE);
                                     } else {
                                         services.setVisibility(View.GONE);
+                                        submitButton.setVisibility(View.GONE);
+
                                     }
                                 });
+
+
                                 AppCompatButton recyclingOrRecoveringButton = (AppCompatButton) selectServicesDialog.findViewById(R.id.recycling_button);
                                 recyclingOrRecoveringButton.setOnClickListener(new View.OnClickListener() {
                                     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -270,6 +283,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                                         service.setOrderUnitSticker(stickers.get(position));
                                                         service.setComponentName(adapter.getItem(positionInner));
                                                         service.setName("Восстановление");
+                                                        service.setPrice(450);
                                                         service.setAmount(1);
 
                                                         if (adapter.getItem(positionInner).contains("тонер")) {
@@ -279,17 +293,17 @@ public class NewOrderActivity extends AppCompatActivity {
                                                             weightTonerEditText.requestFocus();
                                                             tonerWeightDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                                                             AppCompatButton insertWeightOfToner = tonerWeightDialog.findViewById(R.id.weight_toner_button);
-                                                            Service recycling = new Service();
-                                                            recycling.setDateOfCreate(new Date());
-                                                            recycling.setOrderUnitSticker(stickers.get(position));
-                                                            recycling.setComponentName(adapter.getItem(positionInner));
+//                                                            Service recycling = new Service();
+//                                                            recycling.setDateOfCreate(new Date());
+//                                                            recycling.setOrderUnitSticker(stickers.get(position));
+//                                                            recycling.setComponentName(adapter.getItem(positionInner));
                                                             insertWeightOfToner.setOnClickListener(new View.OnClickListener() {
                                                                 @Override
                                                                 public void onClick(View v) {
                                                                     if (weightTonerEditText.getText() != null) {
                                                                         weightOfTonerLiveData.postValue(weightTonerEditText.getText().toString());
-                                                                        recycling.setName("Заправка");
-                                                                        recycling.setAmount(Integer.parseInt(weightTonerEditText.getText().toString()));
+                                                                        service.setName("Заправка");
+                                                                        service.setAmount(Integer.parseInt(weightTonerEditText.getText().toString()));
 
                                                                         List<Service> services = orderServicesLiveData.getValue();
                                                                         if (services == null) {
@@ -297,7 +311,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                         } else {
                                                                             services = services.stream().filter(service1 -> !service1.getName().contains("Заправка")).collect(Collectors.toList());
                                                                         }
-                                                                        services.add(recycling);
+                                                                        services.add(service);
                                                                         orderServicesLiveData.postValue(services);
                                                                         recyclingRecoveringDialog.cancel();
                                                                     }

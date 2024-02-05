@@ -10,21 +10,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -37,7 +33,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +41,6 @@ import com.example.lispelDoc2.R;
 import com.example.lispelDoc2.dao.ClientDAO;
 import com.example.lispelDoc2.dao.ComponentDAO;
 import com.example.lispelDoc2.dao.OrderUnitDAO;
-import com.example.lispelDoc2.dao.PrintUnitDAO;
 import com.example.lispelDoc2.dao.StickerDAO;
 import com.example.lispelDoc2.database.LispelRoomDatabase;
 import com.example.lispelDoc2.interfaces.LispelCreateRepository;
@@ -57,7 +51,6 @@ import com.example.lispelDoc2.models.Client;
 import com.example.lispelDoc2.models.Component;
 import com.example.lispelDoc2.models.Field;
 import com.example.lispelDoc2.models.OrderUnit;
-import com.example.lispelDoc2.models.PrintUnit;
 import com.example.lispelDoc2.models.Service;
 import com.example.lispelDoc2.models.Sticker;
 import com.example.lispelDoc2.uiServices.FieldSetViews;
@@ -65,9 +58,10 @@ import com.example.lispelDoc2.uiServices.ServicesListViewAdapter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class NewOrderActivity extends AppCompatActivity {
@@ -75,7 +69,7 @@ public class NewOrderActivity extends AppCompatActivity {
     ArrayList<FieldSetViews> allFieldsOnLayout = new ArrayList<>();
     MutableLiveData<String> clientLiveData = new MutableLiveData<>();
     MutableLiveData<String> orderUnitLiveData = new MutableLiveData<>();
-    MutableLiveData<List<Service>> orderServicesLiveData = new MutableLiveData<>();
+    MutableLiveData<Map<String,List<Service>>> orderServicesLiveData = new MutableLiveData<>();
     ArrayList<String> clientOrderUnits = new ArrayList<>();
     Client client = null;
     OrderUnit orderUnit = null;
@@ -91,6 +85,7 @@ public class NewOrderActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         );
+        orderServicesLiveData.postValue(new HashMap<String,List<Service>>());
 
         AppCompatButton cancelButton = findViewById(R.id.cancel_add_entity_in_base_button);
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -202,41 +197,35 @@ public class NewOrderActivity extends AppCompatActivity {
                                 selectServicesDialog.show();
                                 TextView printUnitNameTextView = (TextView) selectServicesDialog.findViewById(R.id.title_textview);
                                 printUnitNameTextView.setText(stickers.get(position));
-                                ListView services = (ListView) selectServicesDialog.findViewById(R.id.services_listView);
+                                if (orderServicesLiveData.getValue().get(stickers.get(position)) == null) {
+                                    Map<String,List<Service>> orderServicesMap = orderServicesLiveData.getValue();
+                                    orderServicesMap.put(stickers.get(position), new ArrayList<>());
+                                    orderServicesLiveData.postValue(orderServicesMap);
+                                }
+                                MutableLiveData<List<Service>> printUnitServicesLiveData = new MutableLiveData<>();
+                                printUnitServicesLiveData.postValue(orderServicesLiveData.getValue().get(stickers.get(position)));
+                                ListView servicesListView = (ListView) selectServicesDialog.findViewById(R.id.services_listView);
                                 ServicesListViewAdapter servicesListViewAdapter = new ServicesListViewAdapter(NewOrderActivity.this, new ArrayList<>());
-                                servicesListViewAdapter.innerUpdateDataList(orderServicesLiveData);
-                                services.setAdapter(servicesListViewAdapter);
+                                servicesListViewAdapter.innerUpdateDataList(printUnitServicesLiveData);
+                                servicesListView.setAdapter(servicesListViewAdapter);
 
                                 if (servicesListViewAdapter.isEmpty()){
-                                    services.setVisibility(View.GONE);
+                                    servicesListView.setVisibility(View.GONE);
                                 }
-                                AppCompatButton submitButton = (AppCompatButton) selectServicesDialog.findViewById(R.id.submit_button);
-                                submitButton.setVisibility(View.GONE);
-                                submitButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
 
-                                    }
-                                });
-
-                                orderServicesLiveData.observe(NewOrderActivity.this, gotArrayServices -> {
+                                printUnitServicesLiveData.observe(NewOrderActivity.this, gotArrayServices -> {
                                     if (!gotArrayServices.isEmpty()) {
-//                                        List<String> servicesList = gotArrayServices.stream().map(service -> {
-//                                            String result = service.getName() + " " + service.getComponentName();
-//                                            if (service.getName().contains("Заправка")) {
-//                                                result = result + " " + service.getAmount() + " гр";
-//                                            }
-//                                            return result;
-//                                        }).collect(Collectors.toList());
                                         servicesListViewAdapter.clear();
                                         servicesListViewAdapter.addAll(gotArrayServices);
-                                        services.setVisibility(View.VISIBLE);
-                                        submitButton.setVisibility(View.VISIBLE);
+                                        servicesListView.setVisibility(View.VISIBLE);
                                     } else {
-                                        services.setVisibility(View.GONE);
-                                        submitButton.setVisibility(View.GONE);
+                                        servicesListView.setVisibility(View.GONE);
 
                                     }
+                                    Map<String,List<Service>> orderServicesMap = orderServicesLiveData.getValue();
+                                    orderServicesMap.put(stickers.get(position), gotArrayServices);
+                                    orderServicesLiveData.postValue(orderServicesMap);
+                                    System.out.println(stickers.get(position) + "!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                                 });
 
 
@@ -273,7 +262,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                                         startForResult.launch(intent);
                                                     } else {
 
-                                                        List<Service> services = orderServicesLiveData.getValue();
+                                                        List<Service> services = printUnitServicesLiveData.getValue();
                                                         if (services == null) {
                                                             services = new ArrayList<>();
                                                         }
@@ -293,10 +282,6 @@ public class NewOrderActivity extends AppCompatActivity {
                                                             weightTonerEditText.requestFocus();
                                                             tonerWeightDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                                                             AppCompatButton insertWeightOfToner = tonerWeightDialog.findViewById(R.id.weight_toner_button);
-//                                                            Service recycling = new Service();
-//                                                            recycling.setDateOfCreate(new Date());
-//                                                            recycling.setOrderUnitSticker(stickers.get(position));
-//                                                            recycling.setComponentName(adapter.getItem(positionInner));
                                                             insertWeightOfToner.setOnClickListener(new View.OnClickListener() {
                                                                 @Override
                                                                 public void onClick(View v) {
@@ -305,14 +290,14 @@ public class NewOrderActivity extends AppCompatActivity {
                                                                         service.setName("Заправка");
                                                                         service.setAmount(Integer.parseInt(weightTonerEditText.getText().toString()));
 
-                                                                        List<Service> services = orderServicesLiveData.getValue();
+                                                                        List<Service> services = printUnitServicesLiveData.getValue();
                                                                         if (services == null) {
                                                                             services = new ArrayList<>();
                                                                         } else {
                                                                             services = services.stream().filter(service1 -> !service1.getName().contains("Заправка")).collect(Collectors.toList());
                                                                         }
                                                                         services.add(service);
-                                                                        orderServicesLiveData.postValue(services);
+                                                                        printUnitServicesLiveData.postValue(services);
                                                                         recyclingRecoveringDialog.cancel();
                                                                     }
                                                                     tonerWeightDialog.cancel();
@@ -322,7 +307,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                                             tonerWeightDialog.show();
                                                         } else {
                                                             services.add(service);
-                                                            orderServicesLiveData.postValue(services);
+                                                            printUnitServicesLiveData.postValue(services);
                                                             recyclingRecoveringDialog.cancel();
                                                         }
 

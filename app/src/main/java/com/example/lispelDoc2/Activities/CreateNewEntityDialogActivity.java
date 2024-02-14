@@ -6,6 +6,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
@@ -26,6 +27,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -65,6 +67,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CreateNewEntityDialogActivity extends AppCompatActivity {
 
@@ -246,6 +249,9 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                     if (annotationStringValueRepository.base() == RepositoryEnum.SAVE_IN_BASE_AND_NOT_TO_DISPLAY) {
                         field.setDisplayOptionsWhenCreate(false);
                     }
+                    if (annotationStringValueRepository.base() == RepositoryEnum.READ_FROM_BASE_AND_CREATE_MULTI_VALUE) {
+                        field.setMultiValue(true);
+                    }
 
                         Repository repository = null;
 
@@ -324,8 +330,6 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
 
         } else {
 
-
-
             fieldTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -354,38 +358,74 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                     listView.setAdapter(adapter);
 
                     if (repository != null) {
-                        LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this,
-                                fieldTextView.getText().toString());
-                        allEntity.observe(CreateNewEntityDialogActivity.this, x -> {
-                                    allEntity.removeObservers(CreateNewEntityDialogActivity.this);
-                                    if (x.size() != 0) {
-                                        adapter.clear();
-                                        adapter.addAll(x);
-                                        if (field.isDisplayOptionsWhenCreate()) {
-                                            listView.setVisibility(View.VISIBLE);
-                                        }
-                                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                            @Override
-                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                if (field.isFromBaseAndEdit()) {
-                                                    inputEditText.setText(x.get(position) + " ");
-                                                    inputEditText.setSelection(inputEditText.getText().length());
-                                                } else {
-                                                    fieldTextView.setText(x.get(position));
-                                                    hideKeyboard(context, inputEditText);
-                                                    inputEditText.setVisibility(View.INVISIBLE);
-                                                    imageButton.setVisibility(View.INVISIBLE);
-                                                    titleTextView.setVisibility(View.VISIBLE);
-                                                    fieldTextView.setVisibility(View.VISIBLE);
-                                                }
-                                                listView.setVisibility(View.GONE);
+                        System.out.println("TextView OnClickMethod!!!!!!!!!!");
+                        if (field.isMultiValue()) {
+                            LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this,
+                                    fieldTextView.getText().toString());
+                            allEntity.observe(CreateNewEntityDialogActivity.this, x -> {
+                                        allEntity.removeObservers(CreateNewEntityDialogActivity.this);
+                                        if (x.size() != 0) {
+                                            adapter.clear();
+                                            adapter.addAll(x);
+                                            if (field.isDisplayOptionsWhenCreate()) {
+                                                listView.setVisibility(View.VISIBLE);
                                             }
-                                        });
+                                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                @Override
+                                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                                                    if (field.isFromBaseAndEdit()) {
+                                                        inputEditText.setText(x.get(position) + " ");
+                                                        inputEditText.setSelection(inputEditText.getText().length());
+//                                                    } else {
+//                                                        fieldTextView.setText(x.get(position));
+//                                                        hideKeyboard(context, inputEditText);
+//                                                        inputEditText.setVisibility(View.INVISIBLE);
+//                                                        imageButton.setVisibility(View.INVISIBLE);
+//                                                        titleTextView.setVisibility(View.VISIBLE);
+//                                                        fieldTextView.setVisibility(View.VISIBLE);
+//                                                    }
+//                                                    listView.setVisibility(View.GONE);
+                                                }
+                                            });
+                                        }
                                     }
-                                }
-                        );
-                        if (field.isWriteInBase()) {
-                            imageButton.setVisibility(View.VISIBLE);
+                            );
+
+
+                        } else {
+                            LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this,
+                                    fieldTextView.getText().toString());
+                            allEntity.observe(CreateNewEntityDialogActivity.this, x -> {
+                                        allEntity.removeObservers(CreateNewEntityDialogActivity.this);
+                                        if (x.size() != 0) {
+                                            adapter.clear();
+                                            adapter.addAll(x);
+                                            if (field.isDisplayOptionsWhenCreate()) {
+                                                listView.setVisibility(View.VISIBLE);
+                                            }
+                                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                @Override
+                                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                    if (field.isFromBaseAndEdit()) {
+                                                        inputEditText.setText(x.get(position) + " ");
+                                                        inputEditText.setSelection(inputEditText.getText().length());
+                                                    } else {
+                                                        fieldTextView.setText(x.get(position));
+                                                        hideKeyboard(context, inputEditText);
+                                                        inputEditText.setVisibility(View.INVISIBLE);
+                                                        imageButton.setVisibility(View.INVISIBLE);
+                                                        titleTextView.setVisibility(View.VISIBLE);
+                                                        fieldTextView.setVisibility(View.VISIBLE);
+                                                    }
+                                                    listView.setVisibility(View.GONE);
+                                                }
+                                            });
+                                        }
+                                    }
+                            );
+                            if (field.isWriteInBase()) {
+                                imageButton.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
 
@@ -399,7 +439,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                 if (repository == null) {
                                     fieldTextView.setText(inputEditText.getText());
                                 }
-                                if (field.isFromBaseAndEdit()) {
+                                if (field.isFromBaseAndEdit() || field.isMultiValue()) {
                                     fieldTextView.setText(inputEditText.getText());
                                 }
                                 imageButton.setVisibility(View.INVISIBLE);
@@ -472,41 +512,71 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
 
             }
 
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (repository != null) {
-                    LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this, s.toString());
-                    allEntity.observe(CreateNewEntityDialogActivity.this, x -> {
-                        if (x.size() != 0) {
-                            if (field.isDisplayOptionsWhenCreate()){
-                                listView.setVisibility(View.VISIBLE);
-                            }
-                            adapter.clear();
-                            adapter.addAll(x);
-                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    if (field.isFromBaseAndEdit()) {
-                                        inputEditText.setText(x.get(position) + " ");
-                                        inputEditText.setSelection(inputEditText.getText().length());
-                                    } else {
-                                        fieldTextView.setText(x.get(position));
-                                        hideKeyboard(context, inputEditText);
-                                        inputEditText.setVisibility(View.INVISIBLE);
-                                        imageButton.setVisibility(View.INVISIBLE);
-                                        titleTextView.setVisibility(View.VISIBLE);
-                                        fieldTextView.setVisibility(View.VISIBLE);
-                                    }
-                                    listView.setVisibility(View.GONE);
+                    System.out.println("EditText onTextChanged!!!!!!!!!!");
+                    if (field.isMultiValue()) {
+                        LiveData<List<String>> allEntity = repository.getNameAllEntities(CreateNewEntityDialogActivity.this);
+                        allEntity.observe(CreateNewEntityDialogActivity.this, x -> {
+                            if (x.size() != 0) {
+                                ArrayList<String> stringArrayList = (ArrayList<String>) x.stream().filter(item -> !inputEditText.getText().toString().contains(item)).collect(Collectors.toList());
+                                if (field.isDisplayOptionsWhenCreate()) {
+                                    listView.setVisibility(View.VISIBLE);
                                 }
-                            });
-                        } else {
-                            adapter.clear();
-                            listView.setVisibility(View.GONE);
-                        }
-                        allEntity.removeObservers(CreateNewEntityDialogActivity.this);
-                    });
+                                adapter.clear();
+                                adapter.addAll(stringArrayList);
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        inputEditText.setText(inputEditText.getText() + "|" + stringArrayList.get(position) + " ");
+                                        inputEditText.setSelection(inputEditText.getText().length());
+                                    }
+                                });
+                            } else {
+                                adapter.clear();
+                                listView.setVisibility(View.GONE);
+                            }
+                            allEntity.removeObservers(CreateNewEntityDialogActivity.this);
+                        });
+
+                    } else {
+                        LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this, s.toString());
+                        allEntity.observe(CreateNewEntityDialogActivity.this, x -> {
+                            if (x.size() != 0) {
+                                if (field.isDisplayOptionsWhenCreate()) {
+                                    listView.setVisibility(View.VISIBLE);
+                                }
+                                adapter.clear();
+                                adapter.addAll(x);
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        if (field.isFromBaseAndEdit()) {
+                                            inputEditText.setText(x.get(position) + " ");
+                                            inputEditText.setSelection(inputEditText.getText().length());
+                                        } else {
+                                            fieldTextView.setText(x.get(position));
+                                            hideKeyboard(context, inputEditText);
+                                            inputEditText.setVisibility(View.INVISIBLE);
+                                            imageButton.setVisibility(View.INVISIBLE);
+                                            titleTextView.setVisibility(View.VISIBLE);
+                                            fieldTextView.setVisibility(View.VISIBLE);
+                                        }
+                                        listView.setVisibility(View.GONE);
+                                    }
+                                });
+                            } else {
+                                adapter.clear();
+                                listView.setVisibility(View.GONE);
+                            }
+                            allEntity.removeObservers(CreateNewEntityDialogActivity.this);
+                        });
+                    }
                 }
+
+
             }
 
             @Override

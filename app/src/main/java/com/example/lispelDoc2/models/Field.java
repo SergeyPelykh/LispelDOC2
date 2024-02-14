@@ -16,6 +16,7 @@ public class Field {
     private boolean fromBaseAndEdit;
     private boolean displayOptionsWhenCreate;
     private boolean hasTemplateValue;
+    private boolean isMultiValue;
     private Repository dataSource;
     private String hint;
     private String inscription;
@@ -29,6 +30,7 @@ public class Field {
         this.fromBaseAndEdit = false;
         this.displayOptionsWhenCreate = true;
         this.hasTemplateValue = false;
+        this.isMultiValue = false;
         this.nameTextViewVisibility = 0x00000000;
         this.nameTextEditVisibility = 0x00000004;
         this.imageButtonVisibility = 0x00000004;
@@ -187,5 +189,13 @@ public class Field {
 
     public void setDisplayOptionsWhenCreate(boolean displayOptionsWhenCreate) {
         this.displayOptionsWhenCreate = displayOptionsWhenCreate;
+    }
+
+    public boolean isMultiValue() {
+        return isMultiValue;
+    }
+
+    public void setMultiValue(boolean multiValue) {
+        isMultiValue = multiValue;
     }
 }

@@ -3,14 +3,18 @@ package com.example.lispelDoc2.models;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 
 import com.example.lispelDoc2.dao.proxyDAO.ComponentProxyDAO;
 import com.example.lispelDoc2.interfaces.LispelAddValueByUser;
 import com.example.lispelDoc2.interfaces.LispelCreateRepository;
 import com.example.lispelDoc2.interfaces.RepositoryEnum;
 import com.example.lispelDoc2.interfaces.SavingObject;
+import com.example.lispelDoc2.utilities.Convert;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @LispelCreateRepository(
         dao = ComponentProxyDAO.class,
@@ -64,14 +68,16 @@ public class Component implements SavingObject {
             class_entity = "com.example.lispelDoc2.models.StringValue",
             repository_title = "provider")
     private String provider;
+    @TypeConverters(Convert.class)
     @LispelAddValueByUser(
             number = 6,
             name = "совместимые модели",
             name_hint = "совместимые модели",
             name_title = "совместимые модели",
             class_entity = "com.example.lispelDoc2.models.PrintUnit",
+            base = RepositoryEnum.READ_FROM_BASE_AND_CREATE_MULTI_VALUE,
             input_type = 1)
-    private String compatibility;
+    private List<String> compatibility;
 
 
     @Override
@@ -98,7 +104,7 @@ public class Component implements SavingObject {
         this.fullName = arr.get(2);
         this.vendor = arr.get(3);
         this.provider = arr.get(4);
-        this.compatibility = arr.get(5);
+        addCompatibilityItem(arr.get(5));
     }
 
     public void setId(Long id) {
@@ -145,12 +151,19 @@ public class Component implements SavingObject {
         this.provider = provider;
     }
 
-    public String getCompatibility() {
+    public List<String> getCompatibility() {
         return compatibility;
     }
 
-    public void setCompatibility(String compatibility) {
+    public void setCompatibility(List<String> compatibility) {
         this.compatibility = compatibility;
+    }
+
+    public void addCompatibilityItem(String componentName){
+        if (compatibility == null){
+            compatibility = new ArrayList<>();
+        }
+        compatibility.add(componentName);
     }
 }
 

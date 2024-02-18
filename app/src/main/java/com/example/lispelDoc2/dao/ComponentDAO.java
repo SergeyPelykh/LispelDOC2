@@ -4,9 +4,13 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 
 import com.example.lispelDoc2.models.Component;
 import com.example.lispelDoc2.models.PrintUnit;
+import com.example.lispelDoc2.utilities.Convert;
+
 
 import java.util.List;
 
@@ -36,7 +40,9 @@ public interface ComponentDAO {
     @Query("SELECT * FROM component_table WHERE id = :id")
     LiveData<Component> getEntityById(Long id);
 
-    @Query(" SELECT * FROM component_table WHERE compatibility IN (SELECT model FROM printUnit_table WHERE model IN (SELECT printUnitName FROM orderUnit_table WHERE stickerNumber = :stickerNumber ))")
-    //@Query(" SELECT * FROM component_table WHERE compatibility = :stickerNumber ")
+    @TypeConverters(Convert.class)
+    @Query(" SELECT * FROM component_table WHERE compatibility LIKE '%' || (SELECT model FROM printUnit_table WHERE model IN (SELECT printUnitName FROM orderUnit_table WHERE stickerNumber = :stickerNumber )) || '%'")
+    //@Query(" SELECT * FROM component_table")
     LiveData<List<Component>> getEntityByCompatibility(String stickerNumber);
+    //LiveData<List<Component>> getEntityByCompatibility();
 }

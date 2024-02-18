@@ -16,7 +16,7 @@ import java.util.ArrayList;
         dao = PrintUnitProxyDAO.class,
         entity = com.example.lispelDoc2.models.PrintUnit.class)
 @Entity(tableName = "printUnit_table",
-        indices = {@Index(value = {"model"}, unique = true)})
+        indices = {@Index(value = {"model", "partName", "vendor", "originality"}, unique = true)})
 public class PrintUnit implements SavingObject{
     @PrimaryKey(autoGenerate = true)
     private Long id;
@@ -69,7 +69,7 @@ public class PrintUnit implements SavingObject{
 
     @Override
     public String getDescription() {
-        return model;
+        return model + " " + originality;
     }
 
 

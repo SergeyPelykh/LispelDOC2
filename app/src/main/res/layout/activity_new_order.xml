@@ -86,6 +86,16 @@
             app:layout_constraintBottom_toBottomOf="@+id/addEntityLinearLayout"
             app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field_TextView" />
 
+        <ListView
+            android:id="@+id/services_ListView222"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:textColor="#706565"
+            android:textSize="24dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/addEntityLinearLayout"
+            app:layout_constraintTop_toBottomOf="@+id/inscription_add_entity_field_TextView" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout

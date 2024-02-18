@@ -1,10 +1,7 @@
 package com.example.lispelDoc2.uiServices;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.lifecycle.MutableLiveData;
@@ -27,15 +23,13 @@ import com.example.lispelDoc2.models.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-public class ServicesListViewAdapter extends ArrayAdapter<Service> {
-    ArrayList<Service> dataList;
-    MutableLiveData<List<Service>> dataListLiveData;
-    public ServicesListViewAdapter(@NonNull Context context, ArrayList<Service> dataList) {
+public class ServicesMapViewAdapter extends ArrayAdapter<Service> {
+    Map<String,List<Service>> dataMap;
+    MutableLiveData<Map<String,List<Service>>> dataMapLiveData;
+    public ServicesMapViewAdapter(@NonNull Context context, ArrayList<Service> dataList) {
         super(context, R.layout.recycler_view_item, dataList);
-        this.dataListLiveData = new MutableLiveData<>();
-        //this.dataList = dataList;
+        this.dataMapLiveData = new MutableLiveData<>();
     }
 
     @NonNull
@@ -100,13 +94,8 @@ public class ServicesListViewAdapter extends ArrayAdapter<Service> {
         return convertView;
     }
 
-    public void innerUpdateDataList(MutableLiveData<List<Service>> dataListListener) {
-        this.dataListLiveData = dataListListener;
-    }
-
-    public void setDataList(ArrayList<Service> dataList) {
-        this.dataListLiveData.postValue(dataList);
-
+    public void innerUpdateDataMap(MutableLiveData<Map<String,List<Service>>> dataMapListener) {
+        this.dataMapLiveData = dataMapListener;
     }
 
     private void showKeyboard(Context context, EditText input) {
@@ -120,6 +109,4 @@ public class ServicesListViewAdapter extends ArrayAdapter<Service> {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
     }
-
-
 }

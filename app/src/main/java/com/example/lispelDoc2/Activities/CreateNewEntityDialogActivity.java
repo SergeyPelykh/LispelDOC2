@@ -530,7 +530,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                        inputEditText.setText(inputEditText.getText() + "|" + stringArrayList.get(position) + " ");
+                                        inputEditText.setText(inputEditText.getText() + " " + stringArrayList.get(position) + " ");
                                         inputEditText.setSelection(inputEditText.getText().length());
                                     }
                                 });

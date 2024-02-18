@@ -58,6 +58,8 @@ import com.example.lispelDoc2.uiServices.ServicesListViewAdapter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,23 +71,25 @@ public class NewOrderActivity extends AppCompatActivity {
     ArrayList<FieldSetViews> allFieldsOnLayout = new ArrayList<>();
     MutableLiveData<String> clientLiveData = new MutableLiveData<>();
     MutableLiveData<String> orderUnitLiveData = new MutableLiveData<>();
-    MutableLiveData<Map<String,List<Service>>> orderServicesLiveData = new MutableLiveData<>();
+    MutableLiveData<Map<String,List<Service>>> orderServicesMapLiveData = new MutableLiveData<>();
     ArrayList<String> clientOrderUnits = new ArrayList<>();
     Client client = null;
     OrderUnit orderUnit = null;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order);
+
 
         //keyboard not slide up all views
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         );
-        orderServicesLiveData.postValue(new HashMap<String,List<Service>>());
+        orderServicesMapLiveData.postValue(new HashMap<String,List<Service>>());
 
         AppCompatButton cancelButton = findViewById(R.id.cancel_add_entity_in_base_button);
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -165,6 +169,20 @@ public class NewOrderActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 new ArrayList<>());
         baseOptionListViews.get(1).setAdapter(adapterStickers);
+        ListView mainListServices = (ListView) findViewById(R.id.services_ListView222);
+
+        ServicesListViewAdapter servicesListViewAdapter = new ServicesListViewAdapter(NewOrderActivity.this, new ArrayList<>());
+        mainListServices.setAdapter(servicesListViewAdapter);
+        MutableLiveData<List<Service>> globalListServicesLiveData = new MutableLiveData<>();
+        servicesListViewAdapter.innerUpdateDataList(globalListServicesLiveData);
+        orderServicesMapLiveData.observe(NewOrderActivity.this, gotServicesMap -> {
+            if (!gotServicesMap.isEmpty()) {
+                servicesListViewAdapter.clear();
+                servicesListViewAdapter.addAll(new ArrayList<Service>(gotServicesMap.values().stream().flatMap(List :: stream).collect(Collectors.toList())));
+                globalListServicesLiveData.postValue(new ArrayList<Service>(gotServicesMap.values().stream().flatMap(List :: stream).collect(Collectors.toList())));
+                mainListServices.setVisibility(View.VISIBLE);
+            }
+        });
 
 
         clientLiveData.observe(NewOrderActivity.this, insertedValue -> {
@@ -197,13 +215,13 @@ public class NewOrderActivity extends AppCompatActivity {
                                 selectServicesDialog.show();
                                 TextView printUnitNameTextView = (TextView) selectServicesDialog.findViewById(R.id.title_textview);
                                 printUnitNameTextView.setText(stickers.get(position));
-                                if (orderServicesLiveData.getValue().get(stickers.get(position)) == null) {
-                                    Map<String,List<Service>> orderServicesMap = orderServicesLiveData.getValue();
+                                if (orderServicesMapLiveData.getValue().get(stickers.get(position)) == null) {
+                                    Map<String,List<Service>> orderServicesMap = orderServicesMapLiveData.getValue();
                                     orderServicesMap.put(stickers.get(position), new ArrayList<>());
-                                    orderServicesLiveData.postValue(orderServicesMap);
+                                    orderServicesMapLiveData.postValue(orderServicesMap);
                                 }
                                 MutableLiveData<List<Service>> printUnitServicesLiveData = new MutableLiveData<>();
-                                printUnitServicesLiveData.postValue(orderServicesLiveData.getValue().get(stickers.get(position)));
+                                printUnitServicesLiveData.postValue(orderServicesMapLiveData.getValue().get(stickers.get(position)));
                                 ListView servicesListView = (ListView) selectServicesDialog.findViewById(R.id.services_listView);
                                 ServicesListViewAdapter servicesListViewAdapter = new ServicesListViewAdapter(NewOrderActivity.this, new ArrayList<>());
                                 servicesListViewAdapter.innerUpdateDataList(printUnitServicesLiveData);
@@ -222,10 +240,10 @@ public class NewOrderActivity extends AppCompatActivity {
                                         servicesListView.setVisibility(View.GONE);
 
                                     }
-                                    Map<String,List<Service>> orderServicesMap = orderServicesLiveData.getValue();
+                                    Map<String,List<Service>> orderServicesMap = orderServicesMapLiveData.getValue();
                                     orderServicesMap.put(stickers.get(position), gotArrayServices);
-                                    orderServicesLiveData.postValue(orderServicesMap);
-                                    System.out.println(stickers.get(position) + "!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                                    orderServicesMapLiveData.postValue(orderServicesMap);
+                                    //System.out.println(stickers.get(position) + "!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                                 });
 
 
@@ -247,7 +265,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                         listOfComponents.observe(NewOrderActivity.this, gotComponent -> {
                                             adapter.clear();
                                             if (gotComponent != null) {
-                                                List<String> nameComponents = gotComponent.stream().map(component -> component.getComponentName() + " " + component.getAliasName()).collect(Collectors.toList());
+                                                List<String> nameComponents = gotComponent.stream().map(component -> component.getComponentName() + " " + component.getAliasName() +" "+ component.getCompatibility()).collect(Collectors.toList());
                                                 adapter.addAll(nameComponents);
                                             }
                                             adapter.add("добавить");

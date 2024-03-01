@@ -11,8 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/addEntityLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/addEntityTitleTextView"
@@ -89,7 +88,7 @@
         <ListView
             android:id="@+id/services_ListView222"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="200dp"
             android:textColor="#706565"
             android:textSize="24dp"
             android:visibility="invisible"
@@ -98,19 +97,20 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/list_stickers_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/footer_layout"
+        app:layout_constraintBottom_toTopOf="@+id/final_price_layout"
         app:layout_constraintTop_toBottomOf="@+id/addEntityLinearLayout">
 
 
         <ListView
             android:id="@+id/stickers_of_client_ListView"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="250dp"
             android:textColor="#706565"
             android:textSize="24dp"
             app:layout_constraintBottom_toBottomOf="@+id/list_stickers_layout"
@@ -118,11 +118,35 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/final_price_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/footer_layout">
+
+        <TextView
+            android:id="@+id/final_price_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+            android:textAlignment="center"
+            android:hint="имя"
+            android:paddingStart="4dp"
+            android:textColor="#3C2929"
+            android:textSize="24dp"
+            app:layout_constraintTop_toTopOf="@+id/final_price_layout"
+            app:layout_constraintBottom_toBottomOf="@+id/final_price_layout"
+            app:layout_constraintStart_toStartOf="@+id/final_price_layout"
+            app:layout_constraintEnd_toEndOf="@+id/final_price_layout"
+            tools:layout_editor_absoluteY="4dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/footer_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/main_layout">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/add_entity_in_base_button"

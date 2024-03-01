@@ -87,10 +87,9 @@ public class ServicesListViewAdapter extends ArrayAdapter<Service> {
             @Override
             public void onClick(View v) {
                 dataList = (ArrayList<Service>) dataListLiveData.getValue();
-                if (!dataList.isEmpty()){
+                if (dataList != null && !dataList.isEmpty()){
                     dataList.remove(position);
                     dataListLiveData.postValue(dataList);
-
                     System.out.println("delete item");
                 }
                 notifyDataSetChanged();
@@ -104,10 +103,6 @@ public class ServicesListViewAdapter extends ArrayAdapter<Service> {
         this.dataListLiveData = dataListListener;
     }
 
-    public void setDataList(ArrayList<Service> dataList) {
-        this.dataListLiveData.postValue(dataList);
-
-    }
 
     private void showKeyboard(Context context, EditText input) {
         input.requestFocus();

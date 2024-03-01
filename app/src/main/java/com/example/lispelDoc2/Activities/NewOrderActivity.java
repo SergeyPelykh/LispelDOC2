@@ -55,6 +55,9 @@ import com.example.lispelDoc2.models.Service;
 import com.example.lispelDoc2.models.Sticker;
 import com.example.lispelDoc2.uiServices.FieldSetViews;
 import com.example.lispelDoc2.uiServices.ServicesListViewAdapter;
+import com.example.lispelDoc2.uiServices.ServicesMapItemViewAdapter;
+import com.example.lispelDoc2.utilities.MapServicesToLIst;
+import com.example.lispelDoc2.utilities.ServicesMapItem;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -70,7 +73,6 @@ public class NewOrderActivity extends AppCompatActivity {
 
     ArrayList<FieldSetViews> allFieldsOnLayout = new ArrayList<>();
     MutableLiveData<String> clientLiveData = new MutableLiveData<>();
-    MutableLiveData<String> orderUnitLiveData = new MutableLiveData<>();
     MutableLiveData<Map<String,List<Service>>> orderServicesMapLiveData = new MutableLiveData<>();
     ArrayList<String> clientOrderUnits = new ArrayList<>();
     Client client = null;
@@ -169,18 +171,29 @@ public class NewOrderActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 new ArrayList<>());
         baseOptionListViews.get(1).setAdapter(adapterStickers);
-        ListView mainListServices = (ListView) findViewById(R.id.services_ListView222);
 
-        ServicesListViewAdapter servicesListViewAdapter = new ServicesListViewAdapter(NewOrderActivity.this, new ArrayList<>());
-        mainListServices.setAdapter(servicesListViewAdapter);
-        MutableLiveData<List<Service>> globalListServicesLiveData = new MutableLiveData<>();
-        servicesListViewAdapter.innerUpdateDataList(globalListServicesLiveData);
+
+        ListView mainListServices = (ListView) findViewById(R.id.services_ListView222);
+        ServicesMapItemViewAdapter servicesMapItemViewAdapter = new ServicesMapItemViewAdapter(NewOrderActivity.this, new ArrayList<>());
+        mainListServices.setAdapter(servicesMapItemViewAdapter);
+        MutableLiveData<List<ServicesMapItem>> listServicesMapItem = new MutableLiveData<>();
+        if (orderServicesMapLiveData.getValue() != null) {
+            listServicesMapItem.postValue(MapServicesToLIst.getListFromMapServices(orderServicesMapLiveData.getValue()));
+        }
+
+        servicesMapItemViewAdapter.setInnerListLiveData(listServicesMapItem);
+        listServicesMapItem.observe(NewOrderActivity.this, gotListServices -> {
+            System.out.println("orderServicesMapLiveData listener in Activity");
+            servicesMapItemViewAdapter.clear();
+            if (!gotListServices.isEmpty()) {
+                servicesMapItemViewAdapter.addAll(gotListServices);
+                mainListServices.setVisibility(View.VISIBLE);
+            }
+        });
+
         orderServicesMapLiveData.observe(NewOrderActivity.this, gotServicesMap -> {
             if (!gotServicesMap.isEmpty()) {
-                servicesListViewAdapter.clear();
-                servicesListViewAdapter.addAll(new ArrayList<Service>(gotServicesMap.values().stream().flatMap(List :: stream).collect(Collectors.toList())));
-                globalListServicesLiveData.postValue(new ArrayList<Service>(gotServicesMap.values().stream().flatMap(List :: stream).collect(Collectors.toList())));
-                mainListServices.setVisibility(View.VISIBLE);
+                listServicesMapItem.postValue(MapServicesToLIst.getListFromMapServices(orderServicesMapLiveData.getValue()));
             }
         });
 
@@ -238,12 +251,11 @@ public class NewOrderActivity extends AppCompatActivity {
                                         servicesListView.setVisibility(View.VISIBLE);
                                     } else {
                                         servicesListView.setVisibility(View.GONE);
-
                                     }
                                     Map<String,List<Service>> orderServicesMap = orderServicesMapLiveData.getValue();
                                     orderServicesMap.put(stickers.get(position), gotArrayServices);
                                     orderServicesMapLiveData.postValue(orderServicesMap);
-                                    //System.out.println(stickers.get(position) + "!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                                    System.out.println(stickers.get(position) + "!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                                 });
 
 

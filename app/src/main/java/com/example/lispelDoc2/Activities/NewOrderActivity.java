@@ -73,7 +73,8 @@ public class NewOrderActivity extends AppCompatActivity {
 
     ArrayList<FieldSetViews> allFieldsOnLayout = new ArrayList<>();
     MutableLiveData<String> clientLiveData = new MutableLiveData<>();
-    MutableLiveData<Map<String, List<Service>>> orderServicesMapLiveData = new MutableLiveData<>();
+    MutableLiveData<Integer> countOfServicesInOrder = new MutableLiveData<>();
+    MutableLiveData<Map<String,List<Service>>> orderServicesMapLiveData = new MutableLiveData<>();
     ArrayList<String> clientOrderUnits = new ArrayList<>();
     Client client = null;
     OrderUnit orderUnit = null;
@@ -91,7 +92,7 @@ public class NewOrderActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         );
-        orderServicesMapLiveData.postValue(new HashMap<String, List<Service>>());
+        orderServicesMapLiveData.postValue(new HashMap<String,List<Service>>());
 
         AppCompatButton cancelButton = findViewById(R.id.cancel_add_entity_in_base_button);
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -181,29 +182,36 @@ public class NewOrderActivity extends AppCompatActivity {
             listServicesMapItem.postValue(MapServicesToLIst.getListFromMapServices(orderServicesMapLiveData.getValue()));
         }
 
+
+        TextView finalPriceTextView = findViewById(R.id.final_price_textView);
         servicesMapItemViewAdapter.setInnerListLiveData(listServicesMapItem);
         listServicesMapItem.observe(NewOrderActivity.this, gotListServices -> {
-            System.out.println("orderServicesMapLiveData listener in Activity");
             servicesMapItemViewAdapter.clear();
             if (!gotListServices.isEmpty()) {
                 servicesMapItemViewAdapter.addAll(gotListServices);
                 mainListServices.setVisibility(View.VISIBLE);
             }
         });
-        TextView finalPriceTextView = findViewById(R.id.final_price_textView);
+
+        servicesMapItemViewAdapter.setCountOfServices(countOfServicesInOrder);
+
+        countOfServicesInOrder.observe(NewOrderActivity.this, count -> {
+            List<ServicesMapItem> tempList = listServicesMapItem.getValue();
+            int finalPrice = 0;
+            if (!tempList.isEmpty()) {
+                for (ServicesMapItem s: tempList) {
+                    for (Service service: s.getServicesList()) {
+                        finalPrice += Integer.parseInt(service.getPrice().toString());
+                    }
+                }
+                mainListServices.setVisibility(View.VISIBLE);
+            }
+            finalPriceTextView.setText("Итоговая стоимость: " + finalPrice + " руб");
+        });
+
         orderServicesMapLiveData.observe(NewOrderActivity.this, gotServicesMap -> {
             if (!gotServicesMap.isEmpty()) {
                 listServicesMapItem.postValue(MapServicesToLIst.getListFromMapServices(orderServicesMapLiveData.getValue()));
-                int finalPrice = 0;
-                for (String key: gotServicesMap.keySet()) {
-                    List<Service> tempList = gotServicesMap.get(key);
-                    if (!tempList.isEmpty()){
-                        for (Service s: tempList) {
-                            finalPrice += Integer.parseInt(s.getPrice().toString());
-                        }
-                    }
-                }
-                finalPriceTextView.setText("Итоговая стоимость: " + finalPrice + " руб");
             }
         });
 
@@ -239,7 +247,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                 TextView printUnitNameTextView = (TextView) selectServicesDialog.findViewById(R.id.title_textview);
                                 printUnitNameTextView.setText(stickers.get(position));
                                 if (orderServicesMapLiveData.getValue().get(stickers.get(position)) == null) {
-                                    Map<String, List<Service>> orderServicesMap = orderServicesMapLiveData.getValue();
+                                    Map<String,List<Service>> orderServicesMap = orderServicesMapLiveData.getValue();
                                     orderServicesMap.put(stickers.get(position), new ArrayList<>());
                                     orderServicesMapLiveData.postValue(orderServicesMap);
                                 }
@@ -250,7 +258,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                 servicesListViewAdapter.innerUpdateDataList(printUnitServicesLiveData);
                                 servicesListView.setAdapter(servicesListViewAdapter);
 
-                                if (servicesListViewAdapter.isEmpty()) {
+                                if (servicesListViewAdapter.isEmpty()){
                                     servicesListView.setVisibility(View.GONE);
                                 }
 
@@ -262,7 +270,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                     } else {
                                         servicesListView.setVisibility(View.GONE);
                                     }
-                                    Map<String, List<Service>> orderServicesMap = orderServicesMapLiveData.getValue();
+                                    Map<String,List<Service>> orderServicesMap = orderServicesMapLiveData.getValue();
                                     orderServicesMap.put(stickers.get(position), gotArrayServices);
                                     orderServicesMapLiveData.postValue(orderServicesMap);
                                     System.out.println(stickers.get(position) + "!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -287,7 +295,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                         listOfComponents.observe(NewOrderActivity.this, gotComponent -> {
                                             adapter.clear();
                                             if (gotComponent != null) {
-                                                List<String> nameComponents = gotComponent.stream().map(component -> component.getComponentName() + " " + component.getAliasName() + " " + component.getCompatibility()).collect(Collectors.toList());
+                                                List<String> nameComponents = gotComponent.stream().map(component -> component.getComponentName() + " " + component.getAliasName() +" "+ component.getCompatibility()).collect(Collectors.toList());
                                                 adapter.addAll(nameComponents);
                                             }
                                             adapter.add("добавить");

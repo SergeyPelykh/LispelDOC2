@@ -35,6 +35,7 @@ import java.util.Map;
 public class ServicesMapItemViewAdapter extends ArrayAdapter<ServicesMapItem> {
     private Context context;
     private MutableLiveData<List<ServicesMapItem>> innerListLiveData = new MutableLiveData<>();
+    private MutableLiveData<Integer> countOfServices;
 
     public ServicesMapItemViewAdapter(@NonNull Context context, ArrayList<ServicesMapItem> dataList) {
         super(context, R.layout.recycler_view_item, dataList);
@@ -64,14 +65,27 @@ public class ServicesMapItemViewAdapter extends ArrayAdapter<ServicesMapItem> {
 
         printUnitServicesLiveData.observe((LifecycleOwner) context, gotListServices -> {
             adapter.clear();
+            int count = 0;
             if (!gotListServices.isEmpty()) {
+
+
+
+                for (ServicesMapItem s : innerListLiveData.getValue()) {
+                    if (!s.getServicesList().isEmpty()) {
+                        count += s.getServicesList().size();
+                    }
+                }
+
+
                 textView.setText(data.getSticker());
                 adapter.addAll(gotListServices);
+                data.getCountOfItem();
             } else {
                 List<ServicesMapItem> tempListLiveData = innerListLiveData.getValue();
                 tempListLiveData.remove(data);
                 innerListLiveData.postValue(tempListLiveData);
             }
+            countOfServices.postValue(count);
             ResizeListView.changeHeightListView(servicesListView);
         });
 
@@ -86,5 +100,9 @@ public class ServicesMapItemViewAdapter extends ArrayAdapter<ServicesMapItem> {
 
     public void setInnerListLiveData(MutableLiveData<List<ServicesMapItem>> innerListLiveData) {
         this.innerListLiveData = innerListLiveData;
+    }
+
+    public void setCountOfServices(MutableLiveData<Integer> countOfServices) {
+        this.countOfServices = countOfServices;
     }
 }

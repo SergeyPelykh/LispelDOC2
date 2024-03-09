@@ -35,7 +35,6 @@ public class ServicesListViewAdapter extends ArrayAdapter<Service> {
     public ServicesListViewAdapter(@NonNull Context context, ArrayList<Service> dataList) {
         super(context, R.layout.recycler_view_item, dataList);
         this.dataListLiveData = new MutableLiveData<>();
-        //this.dataList = dataList;
     }
 
     @NonNull
@@ -90,7 +89,6 @@ public class ServicesListViewAdapter extends ArrayAdapter<Service> {
                 if (dataList != null && !dataList.isEmpty()){
                     dataList.remove(position);
                     dataListLiveData.postValue(dataList);
-                    System.out.println("delete item");
                 }
                 notifyDataSetChanged();
             }

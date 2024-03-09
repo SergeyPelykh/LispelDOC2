@@ -15,8 +15,10 @@ import com.example.lispelDoc2.dao.ServiceDAO;
 import com.example.lispelDoc2.dao.StickerDAO;
 import com.example.lispelDoc2.dao.StringValueDAO;
 import com.example.lispelDoc2.dao.TonerDAO;
+import com.example.lispelDoc2.dao.proxyDAO.OrderDAO;
 import com.example.lispelDoc2.models.Client;
 import com.example.lispelDoc2.models.Component;
+import com.example.lispelDoc2.models.Order;
 import com.example.lispelDoc2.models.OrderUnit;
 import com.example.lispelDoc2.models.PrintUnit;
 import com.example.lispelDoc2.models.Service;
@@ -37,8 +39,9 @@ import java.util.concurrent.Executors;
         Component.class,
         Sticker.class,
         OrderUnit.class,
-        Service.class},
-        version = 6, exportSchema = false)
+        Service.class,
+        Order.class},
+        version = 7, exportSchema = false)
 @TypeConverters({Convert.class})
 public abstract class LispelRoomDatabase extends RoomDatabase {
     public abstract PrintUnitDAO printUnitDAO();
@@ -56,6 +59,8 @@ public abstract class LispelRoomDatabase extends RoomDatabase {
     public abstract OrderUnitDAO orderUnitDAO();
 
     public abstract ServiceDAO serviceDAO();
+
+    public abstract OrderDAO orderDAO();
 
     private static volatile LispelRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;

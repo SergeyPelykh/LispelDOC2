@@ -167,6 +167,7 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
 
         AppCompatButton saveButton = findViewById(R.id.add_entity_in_base_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 Intent intentReturn = new Intent();
@@ -180,6 +181,9 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                             dataForCreateEntity.add(mapFields.get(i).getResultId());
                         }
                     }
+
+                    dataForCreateEntity.stream().forEach(s -> System.out.println(s));
+
                     SavingObject savingObject = null;
                     try {
                         savingObject = (SavingObject) Class
@@ -214,7 +218,6 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                                     intentReturn.putExtra(intent.getStringExtra("createEntity"), x.toString());
                                     intentReturn.putExtra("classNameInsertedEntity", (intent.getStringExtra("nameEntityClass")));
                                     setResult(RESULT_OK, intentReturn);
-                                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!! return Id " + x );
                                     onBackPressed();
                                 }
                             });
@@ -358,7 +361,6 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
                     listView.setAdapter(adapter);
 
                     if (repository != null) {
-                        System.out.println("TextView OnClickMethod!!!!!!!!!!");
                         if (field.isMultiValue()) {
                             LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(CreateNewEntityDialogActivity.this,
                                     fieldTextView.getText().toString());
@@ -516,7 +518,6 @@ public class CreateNewEntityDialogActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (repository != null) {
-                    System.out.println("EditText onTextChanged!!!!!!!!!!");
                     if (field.isMultiValue()) {
                         LiveData<List<String>> allEntity = repository.getNameAllEntities(CreateNewEntityDialogActivity.this);
                         allEntity.observe(CreateNewEntityDialogActivity.this, x -> {

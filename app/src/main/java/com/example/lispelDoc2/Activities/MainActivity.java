@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.lifecycle.LiveData;
+import androidx.room.Database;
 
 import android.app.Activity;
 import android.app.Application;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.lispelDoc2.R;
+import com.example.lispelDoc2.database.LispelRoomDatabase;
 import com.example.lispelDoc2.interfaces.LispelAddValueByUser;
 import com.example.lispelDoc2.interfaces.LispelCreateFieldObject;
 import com.example.lispelDoc2.models.Field;
@@ -24,6 +26,7 @@ import com.example.lispelDoc2.models.PrintUnit;
 import com.example.lispelDoc2.models.StringValue;
 import com.example.lispelDoc2.repository.PrintUnitRepository;
 import com.example.lispelDoc2.repository.StringValueRepository;
+import com.example.lispelDoc2.utilities.Convert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
 
     ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -50,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
         PrintUnitRepository printUnitRepository = new PrintUnitRepository(getApplication());
         //FieldRepository fieldRepository = new FieldRepository(getApplication());
         AppCompatButton testButton = findViewById(R.id.testButton);

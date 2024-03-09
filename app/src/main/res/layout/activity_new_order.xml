@@ -11,16 +11,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/addEntityLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/addEntityTitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_light"
+            android:text="новый заказ"
             android:textColor="#3C2929"
             android:textSize="14dp"
-            android:text="новый заказ"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -78,7 +81,7 @@
         <ListView
             android:id="@+id/add_entity_field_ListView"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="400dp"
             android:textColor="#706565"
             android:textSize="24dp"
             android:visibility="invisible"

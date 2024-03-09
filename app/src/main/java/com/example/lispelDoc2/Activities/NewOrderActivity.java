@@ -41,6 +41,8 @@ import com.example.lispelDoc2.R;
 import com.example.lispelDoc2.dao.ClientDAO;
 import com.example.lispelDoc2.dao.ComponentDAO;
 import com.example.lispelDoc2.dao.OrderUnitDAO;
+import com.example.lispelDoc2.dao.PrintUnitDAO;
+import com.example.lispelDoc2.dao.ServiceDAO;
 import com.example.lispelDoc2.dao.StickerDAO;
 import com.example.lispelDoc2.database.LispelRoomDatabase;
 import com.example.lispelDoc2.interfaces.LispelCreateRepository;
@@ -51,9 +53,11 @@ import com.example.lispelDoc2.models.Client;
 import com.example.lispelDoc2.models.Component;
 import com.example.lispelDoc2.models.Field;
 import com.example.lispelDoc2.models.OrderUnit;
+import com.example.lispelDoc2.models.PrintUnit;
 import com.example.lispelDoc2.models.Service;
 import com.example.lispelDoc2.models.Sticker;
 import com.example.lispelDoc2.uiServices.FieldSetViews;
+import com.example.lispelDoc2.uiServices.ResizeListView;
 import com.example.lispelDoc2.uiServices.ServicesListViewAdapter;
 import com.example.lispelDoc2.uiServices.ServicesMapItemViewAdapter;
 import com.example.lispelDoc2.utilities.MapServicesToLIst;
@@ -73,6 +77,7 @@ public class NewOrderActivity extends AppCompatActivity {
 
     ArrayList<FieldSetViews> allFieldsOnLayout = new ArrayList<>();
     MutableLiveData<String> clientLiveData = new MutableLiveData<>();
+    MutableLiveData<Integer> countOfServicesInOrder = new MutableLiveData<>();
     MutableLiveData<Map<String, List<Service>>> orderServicesMapLiveData = new MutableLiveData<>();
     ArrayList<String> clientOrderUnits = new ArrayList<>();
     Client client = null;
@@ -98,6 +103,30 @@ public class NewOrderActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        AppCompatButton saveButton = findViewById(R.id.add_entity_in_base_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ServiceDAO serviceDAO = LispelRoomDatabase.getDatabase(NewOrderActivity.this).serviceDAO();
+                Map<String, List<Service>> stringListMapServices = orderServicesMapLiveData.getValue();
+                if (!stringListMapServices.isEmpty()) {
+                    for (String key: stringListMapServices.keySet()) {
+                        List<Service> tempList = stringListMapServices.get(key);
+                        if (!tempList.isEmpty()) {
+                            for (Service s: tempList) {
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        System.out.println("form saveButton.setOnClickListener: insert Service in base with id " + serviceDAO.insert(s));
+                                    }
+                                }).start();
+                            }
+                        }
+                    }
+                }
             }
         });
 
@@ -159,14 +188,7 @@ public class NewOrderActivity extends AppCompatActivity {
         OrderUnitDAO orderUnitDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).orderUnitDAO();
         StickerDAO stickerDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).stickerDAO();
 
-
-//        int weightOfToner = 0;
         MutableLiveData<String> weightOfTonerLiveData = new MutableLiveData<>();
-//        weightOfTonerLiveData.observe(NewOrderActivity.this, value -> {
-//            weightOfToner = Integer.parseInt(value);
-//        });
-
-
         ArrayAdapter<String> adapterStickers = new ArrayAdapter<>(NewOrderActivity.this,
                 android.R.layout.simple_list_item_1,
                 new ArrayList<>());
@@ -181,29 +203,39 @@ public class NewOrderActivity extends AppCompatActivity {
             listServicesMapItem.postValue(MapServicesToLIst.getListFromMapServices(orderServicesMapLiveData.getValue()));
         }
 
+        TextView finalPriceTextView = findViewById(R.id.final_price_textView);
+
+
         servicesMapItemViewAdapter.setInnerListLiveData(listServicesMapItem);
+
+
         listServicesMapItem.observe(NewOrderActivity.this, gotListServices -> {
-            System.out.println("orderServicesMapLiveData listener in Activity");
             servicesMapItemViewAdapter.clear();
             if (!gotListServices.isEmpty()) {
                 servicesMapItemViewAdapter.addAll(gotListServices);
                 mainListServices.setVisibility(View.VISIBLE);
             }
         });
-        TextView finalPriceTextView = findViewById(R.id.final_price_textView);
+
+        servicesMapItemViewAdapter.setCountOfServices(countOfServicesInOrder);
+
+        countOfServicesInOrder.observe(NewOrderActivity.this, count -> {
+            List<ServicesMapItem> tempList = listServicesMapItem.getValue();
+            int finalPrice = 0;
+            if (!tempList.isEmpty()) {
+                for (ServicesMapItem s: tempList) {
+                    for (Service service: s.getServicesList()) {
+                        finalPrice += Integer.parseInt(service.getPrice().toString());
+                    }
+                }
+                mainListServices.setVisibility(View.VISIBLE);
+            }
+            finalPriceTextView.setText("Итоговая стоимость: " + finalPrice + " руб");
+        });
+
         orderServicesMapLiveData.observe(NewOrderActivity.this, gotServicesMap -> {
             if (!gotServicesMap.isEmpty()) {
                 listServicesMapItem.postValue(MapServicesToLIst.getListFromMapServices(orderServicesMapLiveData.getValue()));
-                int finalPrice = 0;
-                for (String key: gotServicesMap.keySet()) {
-                    List<Service> tempList = gotServicesMap.get(key);
-                    if (!tempList.isEmpty()){
-                        for (Service s: tempList) {
-                            finalPrice += Integer.parseInt(s.getPrice().toString());
-                        }
-                    }
-                }
-                finalPriceTextView.setText("Итоговая стоимость: " + finalPrice + " руб");
             }
         });
 
@@ -259,13 +291,13 @@ public class NewOrderActivity extends AppCompatActivity {
                                         servicesListViewAdapter.clear();
                                         servicesListViewAdapter.addAll(gotArrayServices);
                                         servicesListView.setVisibility(View.VISIBLE);
+
                                     } else {
                                         servicesListView.setVisibility(View.GONE);
                                     }
                                     Map<String, List<Service>> orderServicesMap = orderServicesMapLiveData.getValue();
                                     orderServicesMap.put(stickers.get(position), gotArrayServices);
                                     orderServicesMapLiveData.postValue(orderServicesMap);
-                                    System.out.println(stickers.get(position) + "!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                                 });
 
 
@@ -283,10 +315,12 @@ public class NewOrderActivity extends AppCompatActivity {
                                                 new ArrayList<>());
                                         componentsForServicesListView.setAdapter(adapter);
                                         ComponentDAO componentDAO = LispelRoomDatabase.getDatabase(NewOrderActivity.this).componentDAO();
-                                        LiveData<List<Component>> listOfComponents = componentDAO.getEntityByCompatibility(stickers.get(position));
+
+                                       LiveData<List<Component>> listOfComponents = componentDAO.getEntityByCompatibility(stickers.get(position));
                                         listOfComponents.observe(NewOrderActivity.this, gotComponent -> {
                                             adapter.clear();
                                             if (gotComponent != null) {
+                                                System.out.println(gotComponent.get(0).getAliasName());
                                                 List<String> nameComponents = gotComponent.stream().map(component -> component.getComponentName() + " " + component.getAliasName() + " " + component.getCompatibility()).collect(Collectors.toList());
                                                 adapter.addAll(nameComponents);
                                             }
@@ -294,7 +328,6 @@ public class NewOrderActivity extends AppCompatActivity {
                                             componentsForServicesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                                 @Override
                                                 public void onItemClick(AdapterView<?> parent, View view, int positionInner, long id) {
-                                                    //selectServicesDialog.hide();
                                                     if (positionInner == adapter.getCount() - 1) {
                                                         Intent intent = new Intent(NewOrderActivity.this, CreateNewEntityDialogActivity.class);
                                                         intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.Component");
@@ -308,7 +341,6 @@ public class NewOrderActivity extends AppCompatActivity {
                                                         }
 
                                                         Service service = new Service();
-                                                        service.setDateOfCreate(new Date());
                                                         service.setOrderUnitSticker(stickers.get(position));
                                                         service.setComponentName(adapter.getItem(positionInner));
                                                         service.setName("Восстановление");
@@ -509,8 +541,6 @@ public class NewOrderActivity extends AppCompatActivity {
                                             titleTextView.setVisibility(View.VISIBLE);
                                             fieldTextView.setVisibility(View.VISIBLE);
                                         }
-
-                                        //System.out.println("**************** insert in LiveData from fieldTextView OnClickListener " + x.get(position).substring(0, x.get(position).indexOf(" ")));
                                         listView.setVisibility(View.GONE);
                                         resultLiveData.postValue(x.get(position));
                                     }
@@ -538,7 +568,6 @@ public class NewOrderActivity extends AppCompatActivity {
                             }
                             if (inputEditText.getText().length() == 0) {
                                 fieldTextView.setText("");
-                                //clientLiveData.postValue("");
                             }
                             imageButton.setVisibility(View.INVISIBLE);
                             inputEditText.setVisibility(View.INVISIBLE);
@@ -572,7 +601,6 @@ public class NewOrderActivity extends AppCompatActivity {
                     LiveData<List<String>> allEntity = repository.getNameAllEntitiesByProperty(thisActivity, s.toString());
                     allEntity.observe(thisActivity, x -> {
                         if (x.size() != 0) {
-                            //System.out.println("****************************** get allEntity");
                             listView.setVisibility(View.VISIBLE);
                             adapter.clear();
                             adapter.addAll(x);
@@ -583,7 +611,6 @@ public class NewOrderActivity extends AppCompatActivity {
                                         inputEditText.setText(x.get(position) + " ");
                                         inputEditText.setSelection(inputEditText.getText().length());
                                     } else {
-                                        //fieldTextView.setText(x.get(position));
                                         hideKeyboard(context, inputEditText);
                                         inputEditText.setVisibility(View.INVISIBLE);
                                         imageButton.setVisibility(View.INVISIBLE);
@@ -592,7 +619,6 @@ public class NewOrderActivity extends AppCompatActivity {
                                     }
                                     listView.setVisibility(View.GONE);
                                     resultLiveData.postValue(x.get(position));
-                                    //System.out.println("**************** insert in LiveData from onTextChanged");
                                 }
                             });
                         } else {
@@ -724,16 +750,12 @@ public class NewOrderActivity extends AppCompatActivity {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        System.out.println("***************************************************");
                         if (result.getData().getStringExtra("classNameInsertedEntity").equals("com.example.lispelDoc2.models.Sticker")) {
                             if (client != null) {
-                                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                                 StickerDAO stickerDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).stickerDAO();
                                 LiveData<Sticker> liveData = stickerDAO.getEntityById(Long.parseLong(result.getData().getStringExtra("createdEntityWithId")));
                                 liveData.observe(NewOrderActivity.this, x -> {
-                                    System.out.println("client had stickers " + client.getNumbers());
                                     client.addNumber(x.getNumber());
-                                    System.out.println("client have stickers now " + client.getNumbers());
                                     ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
                                     LispelRoomDatabase.databaseWriteExecutor.execute(() -> {
                                         clientDAO.updateEntity(client);
@@ -745,13 +767,10 @@ public class NewOrderActivity extends AppCompatActivity {
                         }
                         if (result.getData().getStringExtra("classNameInsertedEntity").equals("com.example.lispelDoc2.models.OrderUnit")) {
                             if (client != null) {
-                                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                                 OrderUnitDAO orderUnitDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).orderUnitDAO();
                                 LiveData<OrderUnit> liveData = orderUnitDAO.getEntityById(Long.parseLong(result.getData().getStringExtra("createdEntityWithId")));
                                 liveData.observe(NewOrderActivity.this, x -> {
-                                    System.out.println("client had stickers " + client.getNumbers());
                                     client.addNumber(x.getStickerNumber());
-                                    System.out.println("client have stickers now " + client.getNumbers());
                                     ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
                                     LispelRoomDatabase.databaseWriteExecutor.execute(() -> {
                                         clientDAO.updateEntity(client);

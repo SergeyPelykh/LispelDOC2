@@ -41,8 +41,12 @@ public interface ComponentDAO {
     LiveData<Component> getEntityById(Long id);
 
     @TypeConverters(Convert.class)
-    @Query(" SELECT * FROM component_table WHERE compatibility LIKE '%' || (SELECT model FROM printUnit_table WHERE model IN (SELECT printUnitName FROM orderUnit_table WHERE stickerNumber = :stickerNumber )) || '%'")
+    //@Query(" SELECT * FROM component_table WHERE compatibility LIKE :stickerNumber")
+    @Query(" SELECT componentName FROM component_table WHERE compatibility LIKE '%' || (SELECT model FROM printUnit_table WHERE model IN (SELECT printUnitName FROM orderUnit_table WHERE stickerNumber = :stickerNumber )) || '%'")
+    //@Query("SELECT model FROM printUnit_table WHERE model IN (SELECT printUnitName FROM orderUnit_table WHERE stickerNumber = :stickerNumber )")
+    //@Query("SELECT printUnitName FROM orderUnit_table WHERE stickerNumber = :stickerNumber")
     //@Query(" SELECT * FROM component_table")
     LiveData<List<Component>> getEntityByCompatibility(String stickerNumber);
+    //LiveData<List<Component>> getEntityByCompatibility(String stickerNumber);
     //LiveData<List<Component>> getEntityByCompatibility();
 }

@@ -71,6 +71,7 @@ public class Service implements SavingObject {
     }
 
     public Service() {
+        this.dateOfCreate = new Date();
     }
 
     public Service(ArrayList<String> arr) {

@@ -16,8 +16,6 @@ public class MapServicesToLIst {
         for (String sticker: dataMap.keySet()) {
             if (!dataMap.get(sticker).isEmpty()){
                 arrayList.add(new ServicesMapItem(sticker, dataMap.get(sticker)));
-
-                System.out.println(dataMap.get(sticker).size() + " ServicesMapItem objects add in ServicesMapItemViewAdapter");
             }
 
         }

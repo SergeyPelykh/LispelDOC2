@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.example.lispelDoc2.R;
 import com.example.lispelDoc2.dao.ClientDAO;
 import com.example.lispelDoc2.dao.ComponentDAO;
+import com.example.lispelDoc2.dao.OrderDAO;
 import com.example.lispelDoc2.dao.OrderUnitDAO;
 import com.example.lispelDoc2.dao.ServiceDAO;
 import com.example.lispelDoc2.dao.StickerDAO;
@@ -51,6 +52,7 @@ import com.example.lispelDoc2.interfaces.SavingObject;
 import com.example.lispelDoc2.models.Client;
 import com.example.lispelDoc2.models.Component;
 import com.example.lispelDoc2.models.Field;
+import com.example.lispelDoc2.models.Order;
 import com.example.lispelDoc2.models.OrderUnit;
 import com.example.lispelDoc2.models.Service;
 import com.example.lispelDoc2.models.Sticker;
@@ -77,6 +79,7 @@ public class NewOrderActivity extends AppCompatActivity {
     MutableLiveData<Integer> countOfServicesInOrder = new MutableLiveData<>();
     MutableLiveData<Map<String,List<Service>>> orderServicesMapLiveData = new MutableLiveData<>();
     ArrayList<String> clientOrderUnits = new ArrayList<>();
+    int finalPrice = 0;
     Client client = null;
     OrderUnit orderUnit = null;
 
@@ -100,7 +103,32 @@ public class NewOrderActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ServiceDAO serviceDAO = LispelRoomDatabase.getDatabase(NewOrderActivity.this).serviceDAO();
+                OrderDAO orderDAO = LispelRoomDatabase.getDatabase(NewOrderActivity.this).orderDAO();
                 Map<String, List<Service>> stringListMapServices = orderServicesMapLiveData.getValue();
+                List<Long> servicesId = new ArrayList<>();
+                MutableLiveData<Long> tempOrderId = new MutableLiveData<>();
+                tempOrderId.observe(NewOrderActivity.this, id -> {
+                    Toast.makeText(NewOrderActivity.this,  "order inserted with id " + id + " and " + servicesId.size() + "service(s) inserted in base", Toast.LENGTH_SHORT).show();
+                });
+                MutableLiveData<Long> tempId = new MutableLiveData<>();
+                tempId.observe(NewOrderActivity.this, id -> {
+                    servicesId.add(id);
+                    if (servicesId.size() == countOfServicesInOrder.getValue()) {
+                        Order order = new Order();
+                        order.setClientId(client.getId());
+                        order.setServicesIdList((ArrayList<Long>) servicesId);
+                        order.setFinalPrice((long) finalPrice);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tempOrderId.postValue(orderDAO.insert(order));
+
+                            }
+                        }).start();
+
+
+                    }
+                });
                 if (!stringListMapServices.isEmpty()) {
                     for (String key: stringListMapServices.keySet()) {
                         List<Service> tempList = stringListMapServices.get(key);
@@ -109,7 +137,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        System.out.println("form saveButton.setOnClickListener: insert Service in base with id " + serviceDAO.insert(s));
+                                        tempId.postValue(serviceDAO.insert(s));
                                     }
                                 }).start();
                             }
@@ -224,7 +252,7 @@ public class NewOrderActivity extends AppCompatActivity {
 
         countOfServicesInOrder.observe(NewOrderActivity.this, count -> {
             List<ServicesMapItem> tempList = listServicesMapItem.getValue();
-            int finalPrice = 0;
+            //int finalPrice = 0;
             if (!tempList.isEmpty()) {
                 for (ServicesMapItem s: tempList) {
                     for (Service service: s.getServicesList()) {

@@ -41,6 +41,7 @@ import com.example.lispelDoc2.R;
 import com.example.lispelDoc2.dao.ClientDAO;
 import com.example.lispelDoc2.dao.ComponentDAO;
 import com.example.lispelDoc2.dao.OrderUnitDAO;
+import com.example.lispelDoc2.dao.ServiceDAO;
 import com.example.lispelDoc2.dao.StickerDAO;
 import com.example.lispelDoc2.database.LispelRoomDatabase;
 import com.example.lispelDoc2.interfaces.LispelCreateRepository;
@@ -93,6 +94,32 @@ public class NewOrderActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         );
         orderServicesMapLiveData.postValue(new HashMap<String,List<Service>>());
+
+        AppCompatButton saveButton = findViewById(R.id.add_entity_in_base_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ServiceDAO serviceDAO = LispelRoomDatabase.getDatabase(NewOrderActivity.this).serviceDAO();
+                Map<String, List<Service>> stringListMapServices = orderServicesMapLiveData.getValue();
+                if (!stringListMapServices.isEmpty()) {
+                    for (String key: stringListMapServices.keySet()) {
+                        List<Service> tempList = stringListMapServices.get(key);
+                        if (!tempList.isEmpty()) {
+                            for (Service s: tempList) {
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        System.out.println("form saveButton.setOnClickListener: insert Service in base with id " + serviceDAO.insert(s));
+                                    }
+                                }).start();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
 
         AppCompatButton cancelButton = findViewById(R.id.cancel_add_entity_in_base_button);
         cancelButton.setOnClickListener(new View.OnClickListener() {

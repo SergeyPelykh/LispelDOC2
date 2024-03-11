@@ -175,8 +175,8 @@ public class MainActivity extends AppCompatActivity {
         testButton5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CreateNewOrderActivity.class);
-                intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.Order");
+                Intent intent = new Intent(MainActivity.this, ListOfOrdersActivity.class);
+                //intent.putExtra("nameEntityClass", "com.example.lispelDoc2.models.Order");
                 startForResult.launch(intent);
             }
         });

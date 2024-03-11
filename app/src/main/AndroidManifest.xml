@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LispelDOC2">
         <activity
+            android:name=".Activities.ListOfOrdersActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.NewOrderActivity"
             android:exported="false" />
         <activity

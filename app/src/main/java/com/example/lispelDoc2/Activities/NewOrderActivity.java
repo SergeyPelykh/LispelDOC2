@@ -252,7 +252,7 @@ public class NewOrderActivity extends AppCompatActivity {
 
         countOfServicesInOrder.observe(NewOrderActivity.this, count -> {
             List<ServicesMapItem> tempList = listServicesMapItem.getValue();
-            //int finalPrice = 0;
+            finalPrice = 0;
             if (!tempList.isEmpty()) {
                 for (ServicesMapItem s: tempList) {
                     for (Service service: s.getServicesList()) {

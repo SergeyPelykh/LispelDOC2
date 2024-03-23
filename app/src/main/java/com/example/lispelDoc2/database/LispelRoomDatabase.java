@@ -80,4 +80,5 @@ public abstract class LispelRoomDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
+
 }

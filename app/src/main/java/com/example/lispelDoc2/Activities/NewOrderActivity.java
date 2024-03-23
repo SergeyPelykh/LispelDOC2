@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.room.Database;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -82,6 +83,10 @@ public class NewOrderActivity extends AppCompatActivity {
     int finalPrice = 0;
     Client client = null;
     OrderUnit orderUnit = null;
+
+
+
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)

@@ -2,6 +2,7 @@ package com.example.lispelDoc2.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.TypeConverter;
@@ -16,6 +17,9 @@ import java.util.List;
 
 @Dao
 public interface ComponentDAO {
+    @Delete
+    void deleteAll(Component ... components);
+
     @Insert
     Long insert(Component component);
 
@@ -39,6 +43,8 @@ public interface ComponentDAO {
 
     @Query("SELECT * FROM component_table WHERE id = :id")
     LiveData<Component> getEntityById(Long id);
+
+
 
     @TypeConverters(Convert.class)
     @Query(" SELECT * FROM component_table WHERE compatibility LIKE '%' || (SELECT model FROM printUnit_table WHERE model IN (SELECT printUnitName FROM orderUnit_table WHERE stickerNumber = :stickerNumber )) || '%'")

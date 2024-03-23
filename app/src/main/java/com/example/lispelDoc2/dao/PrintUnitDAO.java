@@ -25,4 +25,7 @@ public interface PrintUnitDAO {
 
     @Query("SELECT * FROM printUnit_table WHERE id = :id")
     LiveData<PrintUnit> getEntityById(Long id);
+
+    @Query("SELECT * FROM printUnit_table WHERE model = (SELECT printUnitName FROM orderUnit_table WHERE stickerNumber = :stickerNumber)")
+    LiveData<PrintUnit> getEntityByStickerNumber(String stickerNumber);
 }

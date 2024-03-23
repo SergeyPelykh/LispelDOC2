@@ -140,6 +140,7 @@ public class CreateNewOrderActivity extends AppCompatActivity {
 
 
         ClientDAO clientDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).clientDAO();
+        //System.out.println(clientDAO.getAllEntities().getValue() + "!!!!!!!!!!!!!!!!!!");
         OrderUnitDAO orderUnitDAO = LispelRoomDatabase.getDatabase(getApplicationContext()).orderUnitDAO();
 
         clientLiveData.observe(CreateNewOrderActivity.this, insertedValue -> {

@@ -17,6 +17,9 @@ public interface OrderDAO {
     @Query("SELECT * FROM order_table")
     LiveData<List<Order>> getAllEntities();
 
+    @Query("SELECT * FROM order_table ORDER BY dateOfCreate DESC")
+    LiveData<List<Order>> getAllEntitiesOrderByDesc();
+
     @Query("SELECT * FROM order_table WHERE id = :id")
     LiveData<Order> getEntityById(Long id);
 }

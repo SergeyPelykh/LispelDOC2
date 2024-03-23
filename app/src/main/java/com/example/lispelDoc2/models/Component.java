@@ -12,6 +12,7 @@ import com.example.lispelDoc2.interfaces.LispelCreateRepository;
 import com.example.lispelDoc2.interfaces.RepositoryEnum;
 import com.example.lispelDoc2.interfaces.SavingObject;
 import com.example.lispelDoc2.utilities.Convert;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +87,7 @@ public class Component implements SavingObject {
     }
 
     @Override
+    @JsonIgnore
     public String getDescription() {
         return componentName + " " + aliasName;
     }

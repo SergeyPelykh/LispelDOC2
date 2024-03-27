@@ -28,4 +28,7 @@ public interface StringValueDAO {
 
     @Query("SELECT * FROM string_value_table WHERE id = :id AND title = :title")
     LiveData<StringValue> getEntityById(String title, Long id);
+
+    @Query("SELECT * FROM string_value_table WHERE id = :id")
+    LiveData<StringValue> getEntityById(Long id);
 }

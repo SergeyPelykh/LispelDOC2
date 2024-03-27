@@ -17,8 +17,11 @@ import java.util.List;
 
 @Dao
 public interface ComponentDAO {
-    @Delete
-    void deleteAll(Component ... components);
+    @Query("DELETE FROM component_table")
+    void deleteAll();
+
+    @Query("SELECT COUNT(id) FROM component_table")
+    int getCountEntities();
 
     @Insert
     Long insert(Component component);

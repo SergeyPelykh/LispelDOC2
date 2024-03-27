@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
 import android.app.Activity;
@@ -30,24 +29,18 @@ import com.example.lispelDoc2.dao.ComponentDAO;
 import com.example.lispelDoc2.database.LispelRoomDatabase;
 import com.example.lispelDoc2.interfaces.LispelAddValueByUser;
 import com.example.lispelDoc2.interfaces.LispelCreateFieldObject;
-import com.example.lispelDoc2.interfaces.LispelCreateRepository;
-import com.example.lispelDoc2.models.Component;
 import com.example.lispelDoc2.models.Field;
 import com.example.lispelDoc2.models.PrintUnit;
 import com.example.lispelDoc2.models.StringValue;
 import com.example.lispelDoc2.repository.PrintUnitRepository;
 import com.example.lispelDoc2.repository.StringValueRepository;
 import com.example.lispelDoc2.utilities.SaveBaseToJsonHelper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -82,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
                 MutableLiveData<String> stringLiveData = null;
 
                 try {
-                    stringLiveData = SaveBaseToJsonHelper.baseToJson(MainActivity.this, LispelRoomDatabase.getDatabase(this), backupDBFilePath);
+                    //stringLiveData = SaveBaseToJsonHelper.baseToJsonToFile(MainActivity.this, LispelRoomDatabase.getDatabase(this), backupDBFilePath);
+                    SaveBaseToJsonHelper.fileToJsonToBase(MainActivity.this, LispelRoomDatabase.getDatabase(MainActivity.this), backupDBFilePath);
                 } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
